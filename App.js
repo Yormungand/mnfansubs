@@ -7,12 +7,15 @@ import Home from "./screens/Home";
 import {Provider as PaperProvider, Button, IconButton, Colors} from 'react-native-paper';
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import s from "./utils/getRelativeSize";
-import {useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {addSheetOpenState} from "./utils/recoilAtoms";
-import {Ionicons} from "@expo/vector-icons";
+import {Entypo, Ionicons} from "@expo/vector-icons";
 import Search from "./screens/Search";
 import {StatusBar} from "expo-status-bar";
 import Movie from "./screens/Movie";
+import Player from "./screens/Player";
+import * as Font from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
 
 const theme = {
     roundness: 2,
@@ -53,13 +56,11 @@ function Main() {
                     headerBackTitle: "Буцах",
                     headerTintColor: "#fff",
                     headerTitleAlign: "center"
-                }}
-            >
+                }}>
                 <Stack.Screen
                     name="Tabs"
                     component={TabNavigator}
-                    options={{headerShown: false}}
-                >
+                    options={{headerShown: false}}>
                 </Stack.Screen>
 
                 <Stack.Screen
@@ -69,7 +70,16 @@ function Main() {
                         {
                             headerTitle: route.params.name,
                         }
-                    )}
+                    )}>
+                </Stack.Screen>
+
+                <Stack.Screen
+                    name="Player"
+                    component={Player}
+                    options={{
+                        headerShown: false,
+                        orientation: "landscape"
+                    }}
                 >
                 </Stack.Screen>
             </Stack.Navigator>

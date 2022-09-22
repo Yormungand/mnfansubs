@@ -1,28 +1,66 @@
-import {Button, Dimensions, Image, Platform, Text, View} from "react-native";
+import {Button, Dimensions, Image, Platform, SafeAreaView, StyleSheet, Text, View} from "react-native";
 import s from "../utils/getRelativeSize";
 import colors from "../utils/colors";
+import {TouchableRipple} from "react-native-paper";
+import {Ionicons} from "@expo/vector-icons";
+import {LinearGradient} from "expo-linear-gradient";
 
 
 export default function Movie({navigation, route}) {
     return (
         <>
             <View>
-                <Image
-                    source={{uri: "https://www.mnfansubs.net/resource/mnfansubs/image/2022/01/27/2ug4r62nckuoqehq/%D0%92%D0%B8%D1%82%D1%87%D0%B5%D1%80_m.png"}}
-                    style={{
-                        width: s(170),
-                        height: s(255),
-                        resizeMode: 'cover',
-                        zIndex: 1,
-                    }}
-                />
+                <SafeAreaView
+                    style={
+                        {
+                            position: "relative",
+                            height: s(350),
+                            width: s(375),
+                            overflow: "hidden"
+                        }
+                    }>
+                    <LinearGradient
+                        colors={["transparent","rgba(0,0,0,0.25)"]}
+                        style={{
+                            position: "absolute",
+                            width: "100%",
+                            height: "100%",
+                            zIndex: 3
+                        }}/>
+                    <Image
+                        source={{uri: "https://www.mnfansubs.net/resource/mnfansubs/image/2022/04/03/ove5174um36qsy47/_l.jpg"}}
+                        style={{
+                            position: "absolute",
+                            top: 0,
+                            width: "100%",
+                            height: s(563),
+                            resizeMode: 'contain',
+                            zIndex: 1,
+                        }}
+                    />
+                </SafeAreaView>
                 <View style={{marginTop: s(10), paddingHorizontal: s(10)}}>
                     <Text style={{
                         color: colors.white,
                         fontSize: s(26),
-                        fontWeight: "bold"}}>
-                        {route.params.name} {Platform.OS === 'ios' ? 'ios':'android'}
+                        fontWeight: "bold"
+                    }}>
+                        {route.params.name} {Platform.OS === 'ios' ? 'ios' : 'android genesis sucks'}
                     </Text>
+                    <View>
+                        <TouchableRipple style={[Styles.button, {marginVertical: s(10)}]}
+                                         mode="contained" onPress={() => {
+                            navigation.navigate("Player")
+                        }}
+                                         rippleColor="rgba(0, 0, 0, .42)">
+                            <View style={{flexDirection: "row", alignItems: "center", justifyContent: "center"}}>
+                                <Ionicons name="play" color={colors.black} size={s(14)} style={{marginRight: s(3)}}/>
+                                <Text style={{color: colors.black, fontWeight: "bold", fontSize: s(14)}}>
+                                    Тоглуулах
+                                </Text>
+                            </View>
+                        </TouchableRipple>
+                    </View>
                     <Text
                         numberOfLines={8}
                         style={{
@@ -45,3 +83,12 @@ export default function Movie({navigation, route}) {
         </>
     )
 }
+const Styles = StyleSheet.create({
+    button: {
+        borderRadius: s(3),
+        backgroundColor: "#fff",
+        paddingVertical: s(10),
+        paddingHorizontal: s(10),
+        width: "100%",
+    },
+})

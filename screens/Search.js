@@ -3,10 +3,10 @@ import {FlatList, SafeAreaView, ScrollView, View} from "react-native";
 import ListHeader from "../components/ListHeader";
 import s from "../utils/getRelativeSize";
 
-export default function Search() {
+export default function Search({ navigation }) {
     const renderMovieItem = ({ item }) => (
         <View style={{marginBottom: s(10)}}>
-            <MovieCard item={item} />
+            <MovieCard item={item} navigation={navigation} />
         </View>
     )
     return (
