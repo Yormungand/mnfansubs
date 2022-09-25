@@ -2,16 +2,31 @@ import s from "../utils/getRelativeSize";
 import colors from "../utils/colors";
 import {TouchableRipple} from "react-native-paper";
 import {Ionicons} from "@expo/vector-icons";
-import {SafeAreaView, StatusBar, Text, View} from "react-native";
+import {Platform, SafeAreaView, StatusBar, Text, View} from "react-native";
 import {Video} from "expo-av";
 import {useEffect, useState} from "react";
 import Back from "../svg/back";
+import * as NavigationBar from "expo-navigation-bar";
 
 export default function Player({ navigation, route }) {
 
     const [status, setStatus] = useState({})
 
     const [visibility, setVisibility] = useState(false)
+    // NavigationBar.setBackgroundColorAsync("white")
+    const navbar = async () => {
+        try {
+            if (Platform.OS == "android"){
+                const navVisibility = await NavigationBar.setVisibilityAsync("hidden");
+            }
+        } catch (e) {
+            console.warn(e)
+        }
+    }
+
+    useEffect(()=>{
+        navbar();
+    }, [])
 
     useEffect(()=>{
         let visTimer

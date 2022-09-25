@@ -1,24 +1,62 @@
-import {Image, SafeAreaView, Text, View, StyleSheet, Platform, Modal, Alert, Pressable} from "react-native";
+import {
+    Image,
+    SafeAreaView,
+    Text,
+    View,
+    StyleSheet,
+    Platform,
+    Modal,
+    Alert,
+    Pressable,
+    TouchableOpacity, TouchableWithoutFeedback, Dimensions
+} from "react-native";
 import s from "../utils/getRelativeSize";
 import {TouchableRipple} from "react-native-paper";
-import {useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import BottomSheet from "./BottomSheet";
 import {Ionicons} from "@expo/vector-icons";
 import colors from "../utils/colors";
 import {Video} from "expo-av";
 import WebView from "react-native-webview";
+import YoutubeIframe from "react-native-youtube-iframe";
 
+const screenWidth = Dimensions.get("window").width;
+const screenHeight = Dimensions.get("window").height;
 export default function MovieCard({navigation, item, style,}) {
-
     const [open, setOpen] = useState(false);
     const [closeRequested, setCloseRequested] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [trailer, setTrailer] = useState(null);
+    const {youtubeRegEx} = useState(/^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/)
+    const [trailerPlaying, setTrailerPlaying] = useState(true);
 
     function handleClose() {
         setOpen(false);
         setCloseRequested(false);
     }
+
+    function youtube_parser(uri) {
+        let regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+        let match = uri.match(regExp);
+        if (match && match[7].length == 11)
+            setTrailer(match[7])
+        return (match && match[7].length == 11) ? match[7] : false;
+    }
+
+    const onStateChange = useCallback((state)=>{
+        if (state === "ended"){
+            console.log("ENDED")
+            setTrailerPlaying(false);
+            setModalVisible(!modalVisible)
+        }
+    },[])
+
+    useEffect(() => {
+        if (trailer !== null) {
+            youtube_parser(trailer)
+        }
+        // console.log(trailer)
+    }, [trailer])
 
     function handlePress(action) {
         setCloseRequested(true);
@@ -157,42 +195,50 @@ export default function MovieCard({navigation, item, style,}) {
                     </View>
                 </View>
 
-                <Modal
-                    animationType="fade"
-                    transparent={true}
-                    visible={modalVisible}
-                    onRequestClose={() => {
-                        Alert.alert('Modal has been closed.');
-                        setModalVisible(!modalVisible);
-                    }}>
-                    <View style={Styles.centeredView}>
-                        <View style={Styles.modalView}>
-                            <WebView
-                                source={{uri: trailer}}
-                            />
-                            <Video
-                                style={{
-                                    width: s(200),
-                                    height:s(200)
-                                }}
-                                resizeMode="contain"
-                                isMuted={false}
-                                isLooping={false}
-                                shouldPlay={true}
-                                usePoster={true}
-                                source={{
-                                    uri: "https://www.mnfansubs.net/resource/mnfansubs/video/2022/09/10/tlhziem0bvuas2lp/MNF_Mortal_Kombat_Legends_-_Movie01_Scorpions_Revenge_BD480p83699760.mp4"
-                                }}
-                                />
-                            <Pressable
-                                style={[Styles.button, Styles.buttonClose]}
-                                onPress={() => setModalVisible(!modalVisible)}>
-                                <Text style={Styles.textStyle}>Hide Modal</Text>
-                            </Pressable>
+                <TouchableWithoutFeedback onPress={()=>{setModalVisible(!modalVisible)}}>
+                    <Modal
+                        animationType="fade"
+                        transparent={true}
+                        visible={modalVisible}
+                        onRequestClose={() => {
+                            Alert.alert('Modal has been closed.');
+                            setModalVisible(!modalVisible);
+                        }}>
+                        <View style={Styles.centeredView}>
+                            <View style={Styles.modalView}>
+                                <SafeAreaView
+                                    style={{
+                                        borderRadius: s(10),
+                                        overflow: "hidden",
+                                        height: s(170),
+                                        width: s(300)
+                                    }}>
+                                    <YoutubeIframe
+                                        height={s(170)}
+                                        width={s(300)}
+                                        videoId={trailer}
+                                        play={true}
+                                        // style={{overflow: "hidden"}}
+                                        onChangeState={onStateChange}
+                                    />
+                                </SafeAreaView>
+                                {/*<Pressable
+                                    style={[Styles.button, Styles.buttonClose]}
+                                    onPress={() => setModalVisible(!modalVisible)}>
+                                    <Text style={Styles.textStyle}>Хаах</Text>
+                                </Pressable>*/}
+                            </View>
+                            <TouchableOpacity
+                                onPress={()=>setModalVisible(!modalVisible)}
+                                style={Styles.backdrop}
+                            >
+                                <Text></Text>
+                            </TouchableOpacity>
                         </View>
-                    </View>
-                </Modal>
+                    </Modal>
+                </TouchableWithoutFeedback>
             </BottomSheet>
+
         </>
     )
 }
@@ -222,10 +268,11 @@ const Styles = StyleSheet.create({
         marginTop: 22,
     },
     modalView: {
+        zIndex: 3,
         margin: 20,
         backgroundColor: '#2b2b2b',
         borderRadius: 20,
-        padding: 35,
+        padding: 20,
         alignItems: 'center',
         shadowColor: '#000',
         shadowOffset: {
@@ -234,13 +281,13 @@ const Styles = StyleSheet.create({
         },
         shadowOpacity: 0.25,
         shadowRadius: 4,
-        elevation: 5,
+        elevation: 10,
     },
     buttonOpen: {
         backgroundColor: '#F194FF',
     },
     buttonClose: {
-        backgroundColor: '#2196F3',
+        backgroundColor: 'rgba(0,0,0,.2)',
     },
     textStyle: {
         color: 'white',
@@ -251,4 +298,12 @@ const Styles = StyleSheet.create({
         marginBottom: 15,
         textAlign: 'center',
     },
+    backdrop: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: screenWidth,
+        height: screenHeight,
+        backgroundColor: "rgba(0,0,0,0.5)",
+    }
 });

@@ -16,6 +16,7 @@ import Movie from "./screens/Movie";
 import Player from "./screens/Player";
 import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
+import * as NavigationBar from "expo-navigation-bar";
 
 const theme = {
     roundness: 2,
@@ -30,6 +31,7 @@ const theme = {
 };
 
 export default function App() {
+    // const visibility = NavigationBar.useVisibility();
     return (
         <RecoilRoot>
             <NavigationContainer theme={theme}>
