@@ -2,13 +2,13 @@ import s from "../utils/getRelativeSize";
 import colors from "../utils/colors";
 import {TouchableRipple} from "react-native-paper";
 import {Ionicons} from "@expo/vector-icons";
-import {Platform, SafeAreaView, StatusBar, Text, View} from "react-native";
+import {Alert, Platform, SafeAreaView, StatusBar, Text, View} from "react-native";
 import {Video} from "expo-av";
 import {useEffect, useState} from "react";
 import Back from "../svg/back";
 import * as NavigationBar from "expo-navigation-bar";
 
-export default function Player({ navigation, route }) {
+export default function Player({navigation, route}) {
 
     const [status, setStatus] = useState({})
 
@@ -16,7 +16,7 @@ export default function Player({ navigation, route }) {
     // NavigationBar.setBackgroundColorAsync("white")
     const navbar = async () => {
         try {
-            if (Platform.OS == "android"){
+            if (Platform.OS == "android") {
                 const navVisibility = await NavigationBar.setVisibilityAsync("hidden");
             }
         } catch (e) {
@@ -24,14 +24,14 @@ export default function Player({ navigation, route }) {
         }
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         navbar();
     }, [])
 
-    useEffect(()=>{
+    useEffect(() => {
         let visTimer
-        if (visibility){
-             visTimer = setTimeout(()=>{
+        if (visibility) {
+            visTimer = setTimeout(() => {
                 setVisibility(false)
             }, 2500)
         }
@@ -46,28 +46,62 @@ export default function Player({ navigation, route }) {
             backgroundColor: "#000"
         }}>
             <StatusBar animated={true} hidden={true}/>
-            <SafeAreaView style={[{position:"absolute", top:s(5), left: s(10), zIndex:2,}, visibility ? {opacity:1}:{opacity:0}]}>
+            <SafeAreaView style={[{
+                position: "absolute",
+                top: s(5),
+                left: s(10),
+                zIndex: 2,
+            }, visibility ? {opacity: 1} : {opacity: 0}]}>
                 <TouchableRipple style={[{marginVertical: s(10), padding: s(10)}]}
-                                 mode="contained" onPress={()=>{navigation.goBack()}}
+                                 mode="contained" onPress={() => {
+                    navigation.goBack()
+                }}
                                  rippleColor="rgba(255, 255, 255, .42)">
                     <View style={{flexDirection: "row", alignItems: "center", justifyContent: "center"}}>
                         <Back/>
-                        <Text style={{color:"#fff"}}>Буцах</Text>
+                        <Text style={{color: "#fff"}}>Буцах</Text>
                     </View>
                 </TouchableRipple>
             </SafeAreaView>
+            <View style={{
+                alignItems: "center",
+                justifyContent: "center",
+                position: "absolute",
+                top: 0,
+                right: 0,
+                width: "100%",
+                height: "100%",
+                zIndex: 2,
+            }} pointerEvents="box-none">
+                <SafeAreaView style={
+                    [{}, visibility ? {opacity: 1} : {opacity: 0}]
+                }
+                >
+                    <TouchableRipple style={[{marginVertical: s(10), padding: s(10)}]}
+                                     mode="contained"
+                                     rippleColor="rgba(255, 255, 255, .42)"
+                                     onPress={() => {}}>
+                        <Text style={{color: "#fff"}}>Pause</Text>
+                    </TouchableRipple>
+                </SafeAreaView>
+            </View>
             <Video
-                onTouchEnd={()=>{setVisibility(true)}}
+                onTouchEnd={() => {
+                    if (visibility)
+                        setVisibility(false);
+                    else
+                        setVisibility(true);
+                }}
                 style={{
-                    width:"100%",
+                    width: "100%",
                     height: "100%",
                 }}
                 isMuted={false}
                 isLooping={false}
-                shouldPlay={true}
-                usePoster={true}
+                shouldPlay
+                usePoster
                 posterSource={"https://www.mnfansubs.net/resource/mnfansubs/image/2022/01/27/2ug4r62nckuoqehq/%D0%92%D0%B8%D1%82%D1%87%D0%B5%D1%80.png"}
-                useNativeControls={true}
+                useNativeControls={false}
                 resizeMode="contain"
                 onPlaybackStatusUpdate={status => setStatus(status)}
                 source={{
