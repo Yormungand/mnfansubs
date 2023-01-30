@@ -1,4 +1,4 @@
-import s from "../utils/getRelativeSize";
+import s from "../Utils/getRelativeSize";
 import {Text, View} from "react-native";
 
 export default function ListHeader({headerName}) {

@@ -1,4 +1,4 @@
-import fetcher from "../utils/fetcher";
+import fetcher from "../Utils/fetcher";
 import {setGlobalState, useGlobalState} from "../hooks/useGlobalState";
 import {useEffect} from "react";
 import {Text} from "react-native";

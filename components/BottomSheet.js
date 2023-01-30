@@ -1,6 +1,6 @@
 import {useEffect, useRef} from "react";
 import RBSheet from 'react-native-raw-bottom-sheet';
-import s from "../utils/getRelativeSize";
+import s from "../Utils/getRelativeSize";
 
 export default function BottomSheet({ open, children, onClose, height, closeRequested }) {
 

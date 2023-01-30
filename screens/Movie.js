@@ -1,6 +1,6 @@
 import {Button, Dimensions, Image, Platform, SafeAreaView, StyleSheet, Text, View} from "react-native";
-import s from "../utils/getRelativeSize";
-import colors from "../utils/colors";
+import s from "../Utils/getRelativeSize";
+import colors from "../Utils/colors";
 import {TouchableRipple} from "react-native-paper";
 import {Ionicons} from "@expo/vector-icons";
 import {LinearGradient} from "expo-linear-gradient";

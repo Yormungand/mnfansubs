@@ -1,10 +1,10 @@
 import {Button, FlatList, Image, SafeAreaView, ScrollView, Text, View} from "react-native";
 import EpisodeCard from "../components/EpisodeCard";
 import MovieCard from "../components/MovieCard";
-import s from "../utils/getRelativeSize"
+import s from "../Utils/getRelativeSize"
 import ListHeader from "../components/ListHeader";
 import {useEffect, useState} from "react";
-import fetcher from "../utils/fetcher";
+import fetcher from "../Utils/fetcher";
 import {urls} from "../Utils/urls";
 import {setGlobalState, useGlobalState} from "../hooks/useGlobalState";
 import MovieCollectionsList from "../components/MovieCollectionsList";

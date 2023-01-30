@@ -1,6 +1,6 @@
 import {View, Text, Image, StyleSheet} from "react-native";
-import s from "../utils/getRelativeSize";
-import colors from "../utils/colors";
+import s from "../Utils/getRelativeSize";
+import colors from "../Utils/colors";
 
 export default function MovieListCard({ movie }) {
 

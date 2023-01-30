@@ -1,6 +1,6 @@
 import ListHeader from "./ListHeader";
 import {FlatList, View} from "react-native";
-import s from "../utils/getRelativeSize";
+import s from "../Utils/getRelativeSize";
 import * as React from "react"
 import {useEffect, useState} from "react";
 import MovieCard from "./MovieCard";

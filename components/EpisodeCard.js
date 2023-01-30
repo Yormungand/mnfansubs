@@ -1,5 +1,5 @@
 import {Image, SafeAreaView, Text, TouchableOpacity, View} from "react-native";
-import s from "../utils/getRelativeSize"
+import s from "../Utils/getRelativeSize"
 import {Chip, TouchableRipple} from "react-native-paper";
 import {urls} from "../Utils/urls";
 

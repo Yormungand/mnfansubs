@@ -1,9 +1,9 @@
 import MovieCard from "../components/MovieCard";
 import {FlatList, SafeAreaView, ScrollView, StyleSheet, TextInput, View} from "react-native";
 import ListHeader from "../components/ListHeader";
-import s from "../utils/getRelativeSize";
+import s from "../Utils/getRelativeSize";
 import MovieListCard from "../components/MovieListCard";
-import fetcher from "../utils/fetcher";
+import fetcher from "../Utils/fetcher";
 import {setGlobalState} from "../hooks/useGlobalState";
 import {useEffect, useState} from "react";
 

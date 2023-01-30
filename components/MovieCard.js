@@ -10,12 +10,12 @@ import {
     Pressable,
     TouchableOpacity, TouchableWithoutFeedback, Dimensions
 } from "react-native";
-import s from "../utils/getRelativeSize";
+import s from "../Utils/getRelativeSize";
 import {TouchableRipple} from "react-native-paper";
 import {useCallback, useEffect, useState} from "react";
 import BottomSheet from "./BottomSheet";
 import {Ionicons} from "@expo/vector-icons";
-import colors from "../utils/colors";
+import colors from "../Utils/colors";
 import {Video} from "expo-av";
 import WebView from "react-native-webview";
 import YoutubeIframe from "react-native-youtube-iframe";

@@ -1,6 +1,6 @@
 import {useRef, useState} from "react";
-import mutator from "../utils/mutator";
-import fetcher from "../utils/fetcher";
+import mutator from "../Utils/mutator";
+import fetcher from "../Utils/fetcher";
 import {setGlobalState, useGlobalState} from "../hooks/useGlobalState";
 import {Text, TextInput, TouchableOpacity, View, StyleSheet, Image, ImageBackground} from "react-native";
 import {urls} from "../Utils/urls";

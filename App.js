@@ -6,9 +6,9 @@ import {createMaterialBottomTabNavigator} from "@react-navigation/material-botto
 import Home from "./screens/Home";
 import {Provider as PaperProvider, Button, IconButton, Colors} from 'react-native-paper';
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
-import s from "./utils/getRelativeSize";
+import s from "./Utils/getRelativeSize";
 import React, {useCallback, useEffect, useState} from "react";
-import {addSheetOpenState} from "./utils/recoilAtoms";
+import {addSheetOpenState} from "./Utils/recoilAtoms";
 import {Entypo, Ionicons} from "@expo/vector-icons";
 import Search from "./screens/Search";
 import {StatusBar} from "expo-status-bar";

@@ -1,4 +1,4 @@
-import {urls} from "../Utils/urls";
+import {urls} from "./urls";
 import {setGlobalState} from "../hooks/useGlobalState";
 
 const mutator = (path, data) => {
