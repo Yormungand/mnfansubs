@@ -21,11 +21,10 @@ export default function BottomSheet({ open, children, onClose, height, closeRequ
     return (
         <RBSheet
             ref={refRBSheet}
-            closeOnDragDown={false}
-            closeOnPressBack={true}
+            closeOnDragDown={true}
             closeOnPressMask={true}
             animationType="fade"
-            openDuration={350}
+            openDuration={500}
             closeDuration={350}
             onClose={()=>onClose()}
             customStyles={{
@@ -34,11 +33,11 @@ export default function BottomSheet({ open, children, onClose, height, closeRequ
                 },
                 container: {
                     backgroundColor: "#2b2b2b",
-                    borderTopLeftRadius: s(10),
-                    borderTopRightRadius: s(10)
+                    borderTopLeftRadius: 20,
+                    borderTopRightRadius: 20
                 },
             }}
-            height={s(220)}
+            height={300}
         >
             {children}
         </RBSheet>

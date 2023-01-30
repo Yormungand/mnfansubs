@@ -43,13 +43,13 @@ export default function MovieCard({navigation, item, style,}) {
         return (match && match[7].length == 11) ? match[7] : false;
     }
 
-    const onStateChange = useCallback((state)=>{
-        if (state === "ended"){
+    const onStateChange = useCallback((state) => {
+        if (state === "ended") {
             console.log("ENDED")
             setTrailerPlaying(false);
             setModalVisible(!modalVisible)
         }
-    },[])
+    }, [])
 
     useEffect(() => {
         if (trailer !== null) {
@@ -64,179 +64,229 @@ export default function MovieCard({navigation, item, style,}) {
 
     return (
         <>
-            <View style={[{marginRight: s(10)}, {style}]}>
-                <View style={{position: 'relative', flex: 1}} rippleColor='rgba(255,255,255,.5)'>
+            <View key={`movie-${item.id}`} style={[{marginRight: 10}, {style}]}>
+                <View style={{position: 'relative', flex: 1, borderRadius: 10, overflow: "hidden"}} rippleColor='rgba(255,255,255,.5)'>
                     <View>
                         <Image
                             source={{uri: "http://www.mnfansubs.net/resource/mnfansubs/image/2022/01/27/2ug4r62nckuoqehq/%D0%92%D0%B8%D1%82%D1%87%D0%B5%D1%80_m.png"}}
-                            style={{width: s(110), height: s(165), resizeMode: 'cover', zIndex: 1, borderRadius: 10}}
+                            style={{width: 110, height: 165, resizeMode: 'cover', zIndex: 1}}
                         />
                         {/*<View style={{position: 'absolute', paddingHorizontal: s(5), bottom: s(3), zIndex: 5}} pointerEvents='none'>*/}
                         {/*    <Text style={{color: '#fff', fontSize: 13}}>Mortal kombat, one piece: {item}-р анги</Text>*/}
                         {/*</View>*/}
                     </View>
-                    <SafeAreaView style={{position: 'absolute',}}>
-                        <TouchableRipple style={Styles.movieCardMask}
-                                         onPress={() => setOpen(true)}
-                                         rippleColor="rgba(255, 255, 255, .42)">
-                            <></>
-                        </TouchableRipple>
-                    </SafeAreaView>
+                    <TouchableRipple style={Styles.movieCardMask}
+                                     onPress={() => setOpen(true)}
+                                     rippleColor="rgba(255, 255, 255, .42)">
+                        <></>
+                    </TouchableRipple>
                 </View>
             </View>
 
             <BottomSheet open={open} onClose={handleClose} closeRequested={closeRequested}>
-                <View style={{flex: 1, padding: s(10)}}>
-                    <View style={{flexDirection: "row"}}>
-                        <Image
-                            source={{uri: "https://www.mnfansubs.net/resource/mnfansubs/image/2022/01/27/2ug4r62nckuoqehq/%D0%92%D0%B8%D1%82%D1%87%D0%B5%D1%80_m.png"}}
-                            style={{
-                                width: s(Platform.OS === 'ios' ? 95 : 85),
-                                height: s(Platform.OS === 'ios' ? 140 : 125),
-                                resizeMode: 'cover',
-                                zIndex: 1,
-                                borderRadius: 10,
-                            }}
-                        />
-                        <View style={{flexDirection: "column", marginLeft: s(10)}}>
-                            <Text numberOfLines={1}
-                                  style={{
-                                      fontSize: s(16),
-                                      fontWeight: "bold",
-                                      color: colors.grey["50"]
-                                  }}>
-                                Mortal Kombat
-                            </Text>
-                            <View style={{
-                                flexDirection: "row", marginTop: s(5)
-                            }}>
-                                <Text style={{color: colors.grey["600"]}}>1999</Text>
-                                <Text style={{
-                                    marginLeft: s(10),
-                                    color: colors.grey["600"]
-                                }}>12+</Text>
-                                <Text style={{
-                                    marginLeft: s(10),
-                                    color: colors.grey["600"]
-                                }}>1000+ анги</Text>
-                            </View>
-                            <View style={{marginTop: s(5)}}>
-                                <Text style={{
-                                    width: s(260),
-                                    height: s(100),
-                                    color: colors.grey["300"]
+                <>
+                    <View style={{flexDirection: "column", justifyContent: "flex-end", flex: 1, padding: 10, width: screenWidth}}>
+                        <View style={{flex: 1, flexDirection: "row",}}>
+                            <Image
+                                source={{uri: "https://www.mnfansubs.net/resource/mnfansubs/image/2022/01/27/2ug4r62nckuoqehq/%D0%92%D0%B8%D1%82%D1%87%D0%B5%D1%80_m.png"}}
+                                style={{
+                                    width: Platform.OS === 'ios' ? 95 : 85,
+                                    height: Platform.OS === 'ios' ? 150 : 150,
+                                    resizeMode: 'cover',
+                                    zIndex: 1,
+                                    borderRadius: 10,
+                                    flex: 2
                                 }}
-                                      numberOfLines={Platform.OS === 'ios' ? 5 : 4}>
-                                    Энэ ертөнцийн бүхнийг өөрийн болгосон далайн дээрэмчний хаан Голд Рожер
-                                    цаазлуулахаасаа
-                                    өмнө хэлсэн сүүлийн үг хүмүүсийг далай руу хөтлөх болжээ. "Миний эрдэнэс үү? Хүсэж
-                                    байвал авч болно. Хайж ол! Би тэр газар бүхнийг орхисон!"
+                            />
+                            <View style={{flexDirection: "column", marginLeft: 10, flex: 5}}>
+                                <Text numberOfLines={2}
+                                      style={{
+                                          fontSize: 16,
+                                          fontWeight: "bold",
+                                          color: colors.grey["50"],
+                                          width: "100%",
+                                      }}>
+                                    {item.name}
                                 </Text>
+                                <View style={{
+                                    flexDirection: "row", marginTop: s(5)
+                                }}>
+                                    <Text style={{color: colors.grey["600"]}}>{item.year} он</Text>
+                                    {/*<Text style={{
+                                        marginLeft: s(10),
+                                        color: colors.grey["600"]
+                                    }}>12+</Text>*/}
+                                    {
+                                        item.totalNumber &&
+                                        <Text style={{
+                                            marginLeft: s(10),
+                                            color: colors.grey["600"]
+                                        }}>
+                                            {item.totalNumber} анги
+                                        </Text>
+                                    }
+                                </View>
+                                <View style={{marginTop: s(5)}}>
+                                    <Text
+                                        style={{
+                                            paddingBottom: 10,
+                                            color: colors.grey["300"],
+                                        }}
+                                        numberOfLines={Platform.OS === 'ios' ? 5 : 4}
+                                    >
+                                        {item.description}
+                                    </Text>
+                                </View>
+                                <View style={{marginBottom: 10}}>
+                                    {
+                                        item.categories.length > 0 &&
+                                        <View style={{flexDirection: "row", flexWrap: "wrap"}}>
+                                            {
+                                                item.categories.map((cat) => (
+                                                    <View
+                                                        key={`cat-${cat.id}`}
+                                                        style={
+                                                            {
+                                                                marginRight: 5,
+                                                                marginBottom: 5,
+                                                                backgroundColor: "#161616",
+                                                                paddingVertical: 4,
+                                                                paddingHorizontal: 5,
+                                                                borderRadius: 3,
+                                                            }
+                                                        }
+                                                    >
+                                                        <Text
+                                                            style={{
+                                                                color: "#dedede",
+                                                                fontSize: 10,
+                                                                lineHeight: 12
+                                                            }}
+                                                        >
+                                                            {cat.name}
+                                                        </Text>
+                                                    </View>
+                                                ))
+                                            }
+                                        </View>
+                                    }
+                                </View>
+                            </View>
+                        </View>
+                        <View style={{
+                            // flex: 1,
+                            flexDirection: "row",
+                            marginTop: Platform.OS === 'ios' ? 20 : 20
+                        }}>
+                            <View>
+                                <TouchableRipple
+                                    style={[Styles.button]}
+                                    mode="contained"
+                                    onPress={() => {
+                                    }}
+                                    rippleColor="rgba(255, 255, 255, .42)"
+                                >
+                                    <View style={{flexDirection: "row", alignItems: "center"}}>
+                                        <Ionicons
+                                            name="play"
+                                            color={colors.white}
+                                            size={s(12)}
+                                            style={{marginRight: s(3)}}
+                                        />
+                                        <Text style={{color: colors.white}}>
+                                            Тоглуулах
+                                        </Text>
+                                    </View>
+                                </TouchableRipple>
+                            </View>
+                            <View>
+                                <TouchableRipple style={[Styles.button, {marginLeft: s(10)}]}
+                                                 mode="contained"
+                                                 onPress={() => {
+                                                     setOpen(false)
+                                                     navigation.navigate("Movie", {name: `${item.name}`})
+                                                 }}
+                                                 rippleColor="rgba(255, 255, 255, .42)"
+                                >
+                                    <View style={{flexDirection: "row", alignItems: "center"}}>
+                                        <Ionicons
+                                            name="information-circle-outline"
+                                            color={colors.white}
+                                            size={s(17)}
+                                            style={{marginRight: s(3)}}
+                                        />
+                                        <Text style={{color: colors.white}}>
+                                            Дэлгэрэнгүй
+                                        </Text>
+                                    </View>
+                                </TouchableRipple>
+                            </View>
+                            <View>
+                                <TouchableRipple style={[Styles.button, {marginLeft: s(10)}]}
+                                                 mode="contained"
+                                                 onPress={() => {
+                                                     // setOpen(false)
+                                                     setModalVisible(true);
+                                                     setTrailer("https://youtu.be/Qx01pn9l-6g");
+                                                 }}
+                                                 rippleColor="rgba(255, 255, 255, .42)"
+                                >
+                                    <View style={{flexDirection: "row", alignItems: "center"}}>
+                                        <Ionicons name="videocam" color={colors.white} size={s(17)}
+                                                  style={{marginRight: s(3)}}/>
+                                        <Text style={{color: colors.white}}>
+                                            Trailer
+                                        </Text>
+                                    </View>
+                                </TouchableRipple>
                             </View>
                         </View>
                     </View>
-                    <View style={{
-                        flex: 1,
-                        flexDirection: "row",
-                        marginTop:
-                            Platform.OS === 'ios' ? s(20) : s(0)
+                    <TouchableWithoutFeedback onPress={() => {
+                        setModalVisible(!modalVisible)
                     }}>
-                        <View>
-                            <TouchableRipple style={[Styles.button]}
-                                             mode="contained" onPress={() => {
-                            }}
-                                             rippleColor="rgba(255, 255, 255, .42)">
-                                <View style={{flexDirection: "row", alignItems: "center"}}>
-                                    <Ionicons name="play" color={colors.white} size={s(12)}
-                                              style={{marginRight: s(3)}}/>
-                                    <Text style={{color: colors.white}}>
-                                        Тоглуулах
-                                    </Text>
-                                </View>
-                            </TouchableRipple>
-                        </View>
-                        <View>
-                            <TouchableRipple style={[Styles.button, {marginLeft: s(10)}]}
-                                             mode="contained"
-                                             onPress={() => {
-                                                 setOpen(false)
-                                                 navigation.navigate("Movie", {name: "Mortal Kombat 2"})
-                                             }}
-                                             rippleColor="rgba(255, 255, 255, .42)"
-                            >
-                                <View style={{flexDirection: "row", alignItems: "center"}}>
-                                    <Ionicons name="information-circle-outline" color={colors.white} size={s(17)}
-                                              style={{marginRight: s(3)}}/>
-                                    <Text style={{color: colors.white}}>
-                                        Дэлгэрэнгүй
-                                    </Text>
-                                </View>
-                            </TouchableRipple>
-                        </View>
-                        <View>
-                            <TouchableRipple style={[Styles.button, {marginLeft: s(10)}]}
-                                             mode="contained"
-                                             onPress={() => {
-                                                 // setOpen(false)
-                                                 setModalVisible(true);
-                                                 setTrailer("https://youtu.be/Qx01pn9l-6g");
-                                             }}
-                                             rippleColor="rgba(255, 255, 255, .42)"
-                            >
-                                <View style={{flexDirection: "row", alignItems: "center"}}>
-                                    <Ionicons name="videocam" color={colors.white} size={s(17)}
-                                              style={{marginRight: s(3)}}/>
-                                    <Text style={{color: colors.white}}>
-                                        Trailer
-                                    </Text>
-                                </View>
-                            </TouchableRipple>
-                        </View>
-                    </View>
-                </View>
-
-                <TouchableWithoutFeedback onPress={()=>{setModalVisible(!modalVisible)}}>
-                    <Modal
-                        animationType="fade"
-                        transparent={true}
-                        visible={modalVisible}
-                        onRequestClose={() => {
-                            Alert.alert('Modal has been closed.');
-                            setModalVisible(!modalVisible);
-                        }}>
-                        <View style={Styles.centeredView}>
-                            <View style={Styles.modalView}>
-                                <SafeAreaView
-                                    style={{
-                                        borderRadius: s(10),
-                                        overflow: "hidden",
-                                        height: s(170),
-                                        width: s(300)
-                                    }}>
-                                    <YoutubeIframe
-                                        height={s(170)}
-                                        width={s(300)}
-                                        videoId={trailer}
-                                        play={true}
-                                        // style={{overflow: "hidden"}}
-                                        onChangeState={onStateChange}
-                                    />
-                                </SafeAreaView>
-                                {/*<Pressable
+                        <Modal
+                            animationType="fade"
+                            transparent={true}
+                            visible={modalVisible}
+                            onRequestClose={() => {
+                                Alert.alert('Modal has been closed.');
+                                setModalVisible(!modalVisible);
+                            }}>
+                            <View style={Styles.centeredView}>
+                                <View style={Styles.modalView}>
+                                    <SafeAreaView
+                                        style={{
+                                            borderRadius: s(10),
+                                            overflow: "hidden",
+                                            height: s(170),
+                                            width: s(300)
+                                        }}>
+                                        <YoutubeIframe
+                                            height={s(170)}
+                                            width={s(300)}
+                                            videoId={trailer}
+                                            play={true}
+                                            // style={{overflow: "hidden"}}
+                                            onChangeState={onStateChange}
+                                        />
+                                    </SafeAreaView>
+                                    {/*<Pressable
                                     style={[Styles.button, Styles.buttonClose]}
                                     onPress={() => setModalVisible(!modalVisible)}>
                                     <Text style={Styles.textStyle}>Хаах</Text>
                                 </Pressable>*/}
+                                </View>
+                                <TouchableOpacity
+                                    onPress={() => setModalVisible(!modalVisible)}
+                                    style={Styles.backdrop}
+                                >
+                                    <Text></Text>
+                                </TouchableOpacity>
                             </View>
-                            <TouchableOpacity
-                                onPress={()=>setModalVisible(!modalVisible)}
-                                style={Styles.backdrop}
-                            >
-                                <Text></Text>
-                            </TouchableOpacity>
-                        </View>
-                    </Modal>
-                </TouchableWithoutFeedback>
+                        </Modal>
+                    </TouchableWithoutFeedback>
+                </>
             </BottomSheet>
 
         </>
@@ -255,8 +305,8 @@ const Styles = StyleSheet.create({
         position: 'absolute',
         top: 0,
         left: 0,
-        width: s(110),
-        height: s(165),
+        width: "100%",
+        height: "100%",
         zIndex: 4,
         backgroundColor: 'rgba(0,0,0,0.1)',
         borderRadius: s(10)

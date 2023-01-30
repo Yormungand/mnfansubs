@@ -7,7 +7,7 @@ import Home from "./screens/Home";
 import {Provider as PaperProvider, Button, IconButton, Colors} from 'react-native-paper';
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import s from "./utils/getRelativeSize";
-import {useCallback, useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {addSheetOpenState} from "./utils/recoilAtoms";
 import {Entypo, Ionicons} from "@expo/vector-icons";
 import Search from "./screens/Search";
@@ -17,6 +17,11 @@ import Player from "./screens/Player";
 import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import * as NavigationBar from "expo-navigation-bar";
+import {useGlobalState} from "./hooks/useGlobalState";
+import Login from "./screens/Login";
+import ClientHome from "./screens/client/ClientHome";
+import ClientProfile from "./screens/client/ClientProfile";
+import ClientProfileEdit from "./screens/client/ClientProfileEdit";
 
 const theme = {
     roundness: 2,
@@ -35,10 +40,18 @@ export default function App() {
     return (
         <RecoilRoot>
             <NavigationContainer theme={theme}>
-                <Main/>
+                <UserProvider>
+                    <Main/>
+                </UserProvider>
             </NavigationContainer>
         </RecoilRoot>
     );
+}
+
+function UserProvider({children}) {
+    const [user] = useGlobalState("currentUser")
+    if (!user) return <Login/>
+    return children;
 }
 
 const Stack = createNativeStackNavigator();
@@ -64,7 +77,6 @@ function Main() {
                     component={TabNavigator}
                     options={{headerShown: false}}>
                 </Stack.Screen>
-
                 <Stack.Screen
                     name="Movie"
                     component={Movie}
@@ -74,7 +86,14 @@ function Main() {
                         }
                     )}>
                 </Stack.Screen>
-
+                <Stack.Screen
+                    name="Login"
+                    component={Login}
+                    options={{
+                        headerShown: false,
+                    }}
+                >
+                </Stack.Screen>
                 <Stack.Screen
                     name="Player"
                     component={Player}
@@ -82,6 +101,26 @@ function Main() {
                         headerShown: false,
                         orientation: "landscape"
                     }}
+                >
+                </Stack.Screen>
+                <Stack.Screen
+                    name="ClientProfile"
+                    component={ClientProfile}
+                    options={()=>(
+                        {
+                            headerTitle: "Миний профайл"
+                        }
+                    )}
+                >
+                </Stack.Screen>
+                <Stack.Screen
+                    name="ClientProfileEdit"
+                    component={ClientProfileEdit}
+                    options={()=>(
+                        {
+                            headerTitle: "Миний профайл edit"
+                        }
+                    )}
                 >
                 </Stack.Screen>
             </Stack.Navigator>
@@ -136,8 +175,13 @@ function TabNavigator() {
                 component={Home}
                 options={{
                     // tabBarLabel: "Home",
-                    tabBarIcon: ({color, size, focused}) => <Ionicons name="home" color={focused ? "#fff" : "#666"}
-                                                                      size={s(17)} style={{marginRight: s(3)}}/>,
+                    tabBarIcon: ({color, size, focused}) => (
+                        <Ionicons
+                            name="home"
+                            color={focused ? "#fff" : "#666"}
+                            size={17}
+                            style={{marginRight: s(3)}}/>
+                    ),
                 }}
             >
 
@@ -146,12 +190,32 @@ function TabNavigator() {
                 name="Search"
                 component={Search}
                 options={{
-                    // tabBarLabel: "Search",
-                    tabBarIcon: ({color, size, focused}) => <Ionicons name="search" color={focused ? "#fff" : "#666"}
-                                                                      size={s(17)} style={{marginRight: s(3)}}/>,
+                    // person-circle-outline
+                    tabBarIcon: ({color, size, focused}) => (
+                        <Ionicons
+                            name="search"
+                            color={focused ? "#fff" : "#666"}
+                            size={17}
+                            style={{marginRight: s(3)}}/>
+                    ),
                 }}
             >
-
+            </Tab.Screen>
+            <Tab.Screen
+                component={ClientHome}
+                name="Профайл"
+                options={{
+                    largeTitle: "Профайл",
+                    tabBarLabel: 'Профайл',
+                    tabBarIcon: ({color, size, focused}) => (
+                        <Ionicons
+                            name="person-circle-outline"
+                            color={focused ? "#fff" : "#666"}
+                            size={17}
+                            style={{marginRight: s(3)}}/>
+                    ),
+                }}
+            >
             </Tab.Screen>
         </Tab.Navigator>
     )
