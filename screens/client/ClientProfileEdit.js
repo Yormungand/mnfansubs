@@ -99,53 +99,44 @@ export default function ClientProfileEdit() {
                     />
                 </View>
             </View>
-            <View style={style.inputWrapper}>
-                <View style={[{width: "47%"}]}>
-                    <Text style={style.inputLabel}>Хүйс</Text>
-                    <TextInput
-                        placeholder="Хүйс"
-                        placeholderTextColor={"#777"}
-                        style={style.profileInput}
-                        value={gender}
-                    />
-                </View>
-                <View style={[{width: "47%"}]}>
-                    <Text style={style.inputLabel}>Төрсөн өдөр</Text>
-                    {
-                        Platform.OS === "android" ?
-                            <TouchableOpacity
-                                onPress={()=>setDateShow(true)}
-                                style={[style.profileInput, {flex: 1, alignItems: "flex-start", justifyContent: "center",}]}>
-                                <Text style={{color: "#fff"}}>{birthDate ? birthDate : "Төрсөн өдөр"}</Text>
-                            </TouchableOpacity>
-                            :
-                            <DateTimePicker
-                                style={{
-                                    zIndex: 1,
-                                    backgroundColor: '#666',
-                                    height: 38,
-                                    elevation: 15,
-                                    shadowColor: '#000',
-                                    shadowOffset: {width: 0, height: 10},
-                                    shadowOpacity: 0.4,
-                                    shadowRadius: 10,
-                                }}
-                                value={date}
-                                testID="dateTimePicker"
-                                mode={'date'}
-                                is24hour={true}
-                                display="compact"
-                                onChange={onDateChange}
-                                locale="mn-MN"
-                            />
-                    }
-                    {/*<TextInput
-                        placeholder="Төрсөн өдөр"
-                        placeholderTextColor={"#777"}
-                        style={style.profileInput}
-                        value={birthDate}
-                    />*/}
-                </View>
+            <View>
+                <Text style={style.inputLabel}>Хүйс</Text>
+                <TextInput
+                    placeholder="Хүйс"
+                    placeholderTextColor={"#777"}
+                    style={style.profileInput}
+                    value={gender}
+                />
+            </View>
+            <View>
+                <Text style={style.inputLabel}>Төрсөн өдөр</Text>
+                {
+                    Platform.OS === "android" ?
+                        <TouchableOpacity
+                            onPress={()=>setDateShow(true)}
+                            style={[style.profileInput, {flex: 1, alignItems: "flex-start", justifyContent: "center",}]}>
+                            <Text style={{color: "#fff"}}>{birthDate ? birthDate : "Төрсөн өдөр"}</Text>
+                        </TouchableOpacity>
+                        :
+                        <DateTimePicker
+                            style={{
+                                zIndex: 1,
+                                backgroundColor: '#666',
+                                elevation: 15,
+                                shadowColor: '#000',
+                                shadowOffset: {width: 0, height: 10},
+                                shadowOpacity: 0.4,
+                                shadowRadius: 10,
+                            }}
+                            value={date}
+                            testID="dateTimePicker"
+                            mode={'date'}
+                            is24hour={true}
+                            display="compact"
+                            onChange={onDateChange}
+                            locale="mn-MN"
+                        />
+                }
             </View>
             <View>
                 <Text style={style.inputLabel}>Төрсөн өдөр</Text>
