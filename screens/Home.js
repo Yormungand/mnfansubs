@@ -123,7 +123,7 @@ export default function Home({navigation}) {
                                       renderItem={movieCollectionList}
                                   />
                               </View>
-                              <View style={{marginBottom: s(25)}}></View>
+                              <View style={{marginBottom: 25}}></View>
                           </>
                       )}
                       style={{paddingBottom: 40}}

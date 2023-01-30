@@ -14,8 +14,8 @@ export default function Movie({navigation, route}) {
                     style={
                         {
                             position: "relative",
-                            height: s(350),
-                            width: s(375),
+                            height: 350,
+                            width: 375,
                             overflow: "hidden"
                         }
                     }>
@@ -33,29 +33,29 @@ export default function Movie({navigation, route}) {
                             position: "absolute",
                             top: 0,
                             width: "100%",
-                            height: s(563),
+                            height: 563,
                             resizeMode: 'contain',
                             zIndex: 1,
                         }}
                     />
                 </SafeAreaView>
-                <View style={{marginTop: s(10), paddingHorizontal: s(10)}}>
+                <View style={{marginTop: 10, paddingHorizontal: 10}}>
                     <Text style={{
                         color: colors.white,
-                        fontSize: s(26),
+                        fontSize: 26,
                         fontWeight: "bold"
                     }}>
                         {route.params.name} {Platform.OS === 'ios' ? 'ios' : 'android genesis sucks'}
                     </Text>
                     <View>
-                        <TouchableRipple style={[Styles.button, {marginVertical: s(10)}]}
+                        <TouchableRipple style={[Styles.button, {marginVertical: 10}]}
                                          mode="contained" onPress={() => {
                             navigation.navigate("Player")
                         }}
                                          rippleColor="rgba(0, 0, 0, .42)">
                             <View style={{flexDirection: "row", alignItems: "center", justifyContent: "center"}}>
-                                <Ionicons name="play" color={colors.black} size={s(14)} style={{marginRight: s(3)}}/>
-                                <Text style={{color: colors.black, fontWeight: "bold", fontSize: s(14)}}>
+                                <Ionicons name="play" color={colors.black} size={14} style={{marginRight: 3}}/>
+                                <Text style={{color: colors.black, fontWeight: "bold", fontSize: 14}}>
                                     Тоглуулах
                                 </Text>
                             </View>
@@ -64,9 +64,9 @@ export default function Movie({navigation, route}) {
                     <Text
                         numberOfLines={8}
                         style={{
-                            marginTop: s(5),
+                            marginTop: 5,
                             color: colors.white,
-                            fontSize: s(12),
+                            fontSize: 12,
                             fontWeight: "500"
                         }}>
                         Японд Ширай Рюү овгийн их багш Хасаши Ханзо, бяцхан хүү Сатошигийн хамтаар харих замд
@@ -85,10 +85,10 @@ export default function Movie({navigation, route}) {
 }
 const Styles = StyleSheet.create({
     button: {
-        borderRadius: s(3),
+        borderRadius: 3,
         backgroundColor: "#fff",
-        paddingVertical: s(10),
-        paddingHorizontal: s(10),
+        paddingVertical: 10,
+        paddingHorizontal: 10,
         width: "100%",
     },
 })

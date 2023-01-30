@@ -48,11 +48,11 @@ export default function Player({navigation, route}) {
             <StatusBar animated={true} hidden={true}/>
             <SafeAreaView style={[{
                 position: "absolute",
-                top: s(5),
-                left: s(10),
+                top: 5,
+                left: 10,
                 zIndex: 2,
             }, visibility ? {opacity: 1} : {opacity: 0}]}>
-                <TouchableRipple style={[{marginVertical: s(10), padding: s(10)}]}
+                <TouchableRipple style={[{marginVertical: 10, padding: 10}]}
                                  mode="contained" onPress={() => {
                     navigation.goBack()
                 }}
@@ -77,7 +77,7 @@ export default function Player({navigation, route}) {
                     [{}, visibility ? {opacity: 1} : {opacity: 0}]
                 }
                 >
-                    <TouchableRipple style={[{marginVertical: s(10), padding: s(10)}]}
+                    <TouchableRipple style={[{marginVertical: 10, padding: 10}]}
                                      mode="contained"
                                      rippleColor="rgba(255, 255, 255, .42)"
                                      onPress={() => {}}>

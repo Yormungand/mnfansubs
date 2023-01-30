@@ -109,7 +109,7 @@ export default function MovieCard({navigation, item, style,}) {
                                     {item.name}
                                 </Text>
                                 <View style={{
-                                    flexDirection: "row", marginTop: s(5)
+                                    flexDirection: "row", marginTop: 5
                                 }}>
                                     <Text style={{color: colors.grey["600"]}}>{item.year} он</Text>
                                     {/*<Text style={{
@@ -119,14 +119,14 @@ export default function MovieCard({navigation, item, style,}) {
                                     {
                                         item.totalNumber &&
                                         <Text style={{
-                                            marginLeft: s(10),
+                                            marginLeft: 10,
                                             color: colors.grey["600"]
                                         }}>
                                             {item.totalNumber} анги
                                         </Text>
                                     }
                                 </View>
-                                <View style={{marginTop: s(5)}}>
+                                <View style={{marginTop: 5}}>
                                     <Text
                                         style={{
                                             paddingBottom: 10,
@@ -190,8 +190,8 @@ export default function MovieCard({navigation, item, style,}) {
                                         <Ionicons
                                             name="play"
                                             color={colors.white}
-                                            size={s(12)}
-                                            style={{marginRight: s(3)}}
+                                            size={12}
+                                            style={{marginRight: 3}}
                                         />
                                         <Text style={{color: colors.white}}>
                                             Тоглуулах
@@ -200,7 +200,7 @@ export default function MovieCard({navigation, item, style,}) {
                                 </TouchableRipple>
                             </View>
                             <View>
-                                <TouchableRipple style={[Styles.button, {marginLeft: s(10)}]}
+                                <TouchableRipple style={[Styles.button, {marginLeft: 10}]}
                                                  mode="contained"
                                                  onPress={() => {
                                                      setOpen(false)
@@ -212,8 +212,8 @@ export default function MovieCard({navigation, item, style,}) {
                                         <Ionicons
                                             name="information-circle-outline"
                                             color={colors.white}
-                                            size={s(17)}
-                                            style={{marginRight: s(3)}}
+                                            size={17}
+                                            style={{marginRight: 3}}
                                         />
                                         <Text style={{color: colors.white}}>
                                             Дэлгэрэнгүй
@@ -222,7 +222,7 @@ export default function MovieCard({navigation, item, style,}) {
                                 </TouchableRipple>
                             </View>
                             <View>
-                                <TouchableRipple style={[Styles.button, {marginLeft: s(10)}]}
+                                <TouchableRipple style={[Styles.button, {marginLeft: 10}]}
                                                  mode="contained"
                                                  onPress={() => {
                                                      // setOpen(false)
@@ -232,8 +232,8 @@ export default function MovieCard({navigation, item, style,}) {
                                                  rippleColor="rgba(255, 255, 255, .42)"
                                 >
                                     <View style={{flexDirection: "row", alignItems: "center"}}>
-                                        <Ionicons name="videocam" color={colors.white} size={s(17)}
-                                                  style={{marginRight: s(3)}}/>
+                                        <Ionicons name="videocam" color={colors.white} size={17}
+                                                  style={{marginRight: 3}}/>
                                         <Text style={{color: colors.white}}>
                                             Trailer
                                         </Text>
@@ -257,14 +257,14 @@ export default function MovieCard({navigation, item, style,}) {
                                 <View style={Styles.modalView}>
                                     <SafeAreaView
                                         style={{
-                                            borderRadius: s(10),
+                                            borderRadius: 10,
                                             overflow: "hidden",
-                                            height: s(170),
-                                            width: s(300)
+                                            height: 170,
+                                            width: 300
                                         }}>
                                         <YoutubeIframe
-                                            height={s(170)}
-                                            width={s(300)}
+                                            height={170}
+                                            width={300}
                                             videoId={trailer}
                                             play={true}
                                             // style={{overflow: "hidden"}}
@@ -295,10 +295,10 @@ export default function MovieCard({navigation, item, style,}) {
 
 const Styles = StyleSheet.create({
     button: {
-        borderRadius: s(10),
+        borderRadius: 10,
         backgroundColor: "#1b1b1b",
-        paddingVertical: s(7),
-        paddingHorizontal: s(10),
+        paddingVertical: 7,
+        paddingHorizontal: 10,
         elevation: 2,
     },
     movieCardMask: {
@@ -309,7 +309,7 @@ const Styles = StyleSheet.create({
         height: "100%",
         zIndex: 4,
         backgroundColor: 'rgba(0,0,0,0.1)',
-        borderRadius: s(10)
+        borderRadius: 10,
     },
     centeredView: {
         flex: 1,

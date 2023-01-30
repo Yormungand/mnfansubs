@@ -66,7 +66,7 @@ function Main() {
                     },
                     headerTitleStyle: {
                         fontWeight: "bold",
-                        fontSize: s(16),
+                        fontSize: 16,
                     },
                     headerBackTitle: "Буцах",
                     headerTintColor: "#fff",
@@ -157,7 +157,7 @@ function TabNavigator() {
                 headerTintColor: "#e9e9e9",
                 tabBarActiveTintColor: "#fff",
                 tabBarInactiveTintColor: "#666",
-                tabBarLabelStyle: {textTransform: "uppercase", fontSize: s(8), marginBottom: s(5), fontWeight: "bold"},
+                tabBarLabelStyle: {textTransform: "uppercase", fontSize: 8, marginBottom: 5, fontWeight: "bold"},
                 tabBarShowLabel: true,
                 tabBarActiveBackgroundColor: "#1d1d1d",
                 tabBarInactiveBackgroundColor: "#181818",
@@ -180,7 +180,7 @@ function TabNavigator() {
                             name="home"
                             color={focused ? "#fff" : "#666"}
                             size={17}
-                            style={{marginRight: s(3)}}/>
+                            style={{marginRight: 3}}/>
                     ),
                 }}
             >
@@ -196,7 +196,7 @@ function TabNavigator() {
                             name="search"
                             color={focused ? "#fff" : "#666"}
                             size={17}
-                            style={{marginRight: s(3)}}/>
+                            style={{marginRight: 3}}/>
                     ),
                 }}
             >
@@ -212,7 +212,7 @@ function TabNavigator() {
                             name="person-circle-outline"
                             color={focused ? "#fff" : "#666"}
                             size={17}
-                            style={{marginRight: s(3)}}/>
+                            style={{marginRight: 3}}/>
                     ),
                 }}
             >

@@ -13,7 +13,7 @@ export default function Search({navigation}) {
     const [movies, setMovies] = useState([]);
 
     const renderMovieItem = ({item}) => (
-        <View style={{marginBottom: s(10)}}>
+        <View style={{marginBottom: 10}}>
             <MovieCard item={item} navigation={navigation}/>
         </View>
     )

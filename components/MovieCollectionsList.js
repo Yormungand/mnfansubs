@@ -59,7 +59,7 @@ export default function MovieCollectionsList({item, style}) {
             <FlatList
                 listKey={`collectionList-${item.collectionId}`}
                 data={movies}
-                style={{ marginTop: 10, marginLeft: s(10) }}
+                style={{ marginTop: 10, marginLeft: 10 }}
                 horizontal
                 scrollEnabled={true}
                 // ListHeaderComponent={<View><Text>Home</Text></View>}
