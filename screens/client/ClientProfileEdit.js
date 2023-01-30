@@ -120,6 +120,7 @@ export default function ClientProfileEdit() {
                         :
                         <DateTimePicker
                             style={{
+                                marginBottom: 15,
                                 zIndex: 1,
                                 backgroundColor: '#666',
                                 elevation: 15,
@@ -135,6 +136,7 @@ export default function ClientProfileEdit() {
                             display="compact"
                             onChange={onDateChange}
                             locale="mn-MN"
+                            fontSize={10}
                         />
                 }
             </View>
