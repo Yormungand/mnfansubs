@@ -10,7 +10,7 @@ import {setGlobalState, useGlobalState} from "../hooks/useGlobalState";
 import MovieCollectionsList from "../components/MovieCollectionsList";
 
 export default function Home({navigation}) {
-
+    '//'
     const [latestEpisodes, setLatestEpisodes] = useState([]);
     const [movieCollections, setMovieCollections] = useState([]);
 

@@ -34,7 +34,7 @@ const theme = {
         roundness: 10
     },
 };
-
+//
 export default function App() {
     // const visibility = NavigationBar.useVisibility();
     return (

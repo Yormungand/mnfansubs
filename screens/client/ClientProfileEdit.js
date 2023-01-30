@@ -122,7 +122,8 @@ export default function ClientProfileEdit() {
                             <DateTimePicker
                                 style={{
                                     zIndex: 1,
-                                    backgroundColor: '#f9f9f9',
+                                    backgroundColor: '#666',
+                                    height: 38,
                                     elevation: 15,
                                     shadowColor: '#000',
                                     shadowOffset: {width: 0, height: 10},
@@ -135,6 +136,7 @@ export default function ClientProfileEdit() {
                                 is24hour={true}
                                 display="compact"
                                 onChange={onDateChange}
+                                locale="mn-MN"
                             />
                     }
                     {/*<TextInput
