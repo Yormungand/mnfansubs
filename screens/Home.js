@@ -1,71 +1,61 @@
-import {Button, FlatList, Image, SafeAreaView, ScrollView, Text, View} from "react-native";
+import {FlatList, ScrollView, View} from "react-native";
 import EpisodeCard from "../components/EpisodeCard";
-import MovieCard from "../components/MovieCard";
-import s from "../Utils/getRelativeSize"
 import ListHeader from "../components/ListHeader";
 import {useEffect, useState} from "react";
-import fetcher from "../Utils/fetcher";
 import {urls} from "../Utils/urls";
 import {setGlobalState, useGlobalState} from "../hooks/useGlobalState";
 import MovieCollectionsList from "../components/MovieCollectionsList";
+import {FlashList} from "@shopify/flash-list";
+import fetcher from "../Utils/fetcher";
+import WatchedEpisodeCard from "../components/WatchedEpisodeCard";
+import MovieCard from "../components/MovieCard";
 
 export default function Home({navigation}) {
-    '//'
     const [latestEpisodes, setLatestEpisodes] = useState([]);
     const [movieCollections, setMovieCollections] = useState([]);
+    const [watchedEpisodes, setWatchedEpisodes] = useState([]);
+
+    const [ongoingMovies, setOngoingMovies] = useState([]);
+    const [completedMovies, setCompletedMovies] = useState([]);
 
     const [userToken] = useGlobalState("userToken");
 
-    const getLatestEpisodes = () => {
-        fetch(`${urls}/api/movie/episode/latest?size=8`,
-            {
-                method: "get", credentials: "include", headers: {
-                    'Accept': 'application/json',
-                    "Content-Type": "application/json",
-                }
-            }
-        )
-            .then((res) => {
-                if (res.ok) {
-                    if (res.status === 204)
-                        return null
-                    if (res.status === 401) {
-                        setGlobalState("currentUser", null);
-                        setGlobalState("userToken", null);
-                    }
-                    return res.json()
+    const getWatchedEpisodes = () => {
+        fetcher(`/api/client/episode/watched?size=6`)
+            .then((data) => {
+                if (data.status === 200) {
+                    if (data.payload.thisPageElements.length > 0)
+                        setWatchedEpisodes(data.payload.thisPageElements)
                 }
             })
-            .then((response) => {
-                if (response) {
-                    setLatestEpisodes(response)
-                }
+    }
+    const getLatestEpisodes = () => {
+        fetcher(`/api/movie/episode/latest?size=8`)
+            .then((data) => {
+                if (data.status === 200)
+                    setLatestEpisodes(data.payload)
             })
     }
 
     const getCollections = () => {
-        fetch(`${urls}/api/movie/collection`,
-            {
-                method: "get", credentials: "include", headers: {
-                    'Accept': 'application/json',
-                    "Content-Type": "application/json",
-                }
-            }
-        )
-            .then((res) => {
-                if (res.ok) {
-                    if (res.status === 204)
-                        return null
-                    if (res.status === 401) {
-                        setGlobalState("currentUser", null);
-                        setGlobalState("userToken", null);
-                    }
-                    return res.json()
+        fetcher(`/api/movie/collection`)
+            .then((data) => {
+                if (data.status === 200) {
+                    setMovieCollections(data.payload)
                 }
             })
-            .then((response) => {
-                if (response) {
-                    setMovieCollections(response)
+    }
+
+    const getMoviesList = (movieStatus) => {
+        fetcher(`/api/movie/list?movieStatus=${movieStatus}`)
+            .then((data)=>{
+                if (data.status === 200) {
+                    if (movieStatus === "ONGOING") {
+                        setOngoingMovies(data.payload.thisPageElements)
+                    }
+                    if (movieStatus === "COMPLETED") {
+                        setCompletedMovies(data.payload.thisPageElements)
+                    }
                 }
             })
     }
@@ -73,62 +63,93 @@ export default function Home({navigation}) {
     useEffect(() => {
         getLatestEpisodes();
         getCollections();
+        getWatchedEpisodes();
+        getMoviesList("ONGOING");
+        getMoviesList("COMPLETED");
         return () => {
 
         };
     }, []);
-
-    const getExpired = () => {
-        fetcher(`/api/movie/user/subscription/getExpired`)
-            .then((data) => {
-                if (data.status === 200) {
-                    const date1 = new Date(data.payload * 1000)
-                    console.log("date1=-=-", date1);
-                    console.log("date1 ===" , "date2", date1, new Date())
-                    console.log("difference", (date1.getTime() - new Date().getTime()), (1000 * 3600 * 24), (date1.getTime() - new Date().getTime()) / (1000 * 3600 * 24))
-                    const difference = (date1.getTime() - new Date().getTime());
-                    const totalDays = Math.ceil(difference / (1000 * 3600 * 24))
-                    let result = "Дууссан";
-                    if (totalDays > 0)
-                        result = totalDays + ' өдөр';
-                    console.log(result)
-                }
-            })
-    }
     //
     const renderEpisodeItem = ({item}) => <EpisodeCard item={item} navigation={navigation}/>;
 
+    const renderWatchedEpisodeItem = ({item}) => <WatchedEpisodeCard item={item} navigation={navigation} />
     const movieCollectionList = ({item}) => <MovieCollectionsList item={item}/>;
+
+    const renderMovieCard = ({item}) => <MovieCard item={item} navigation={navigation}/>
 
     return (
         <>
-            <Button title={"get expired"} onPress={getExpired}/>
-            <FlatList data={[0]}
-                      renderItem={() => (
-                          <>
-                              <View>
-                                  <ListHeader headerName="New episodes"/>
-                                  <FlatList
-                                      listKey={`episodesLatestList`}
-                                      data={latestEpisodes}
-                                      style={{marginTop: 10, marginLeft: 10}}
-                                      scrollEnabled={false}
-                                      numColumns={2}
-                                      renderItem={renderEpisodeItem}/>
-                              </View>
-                              <View>
-                                  <FlatList
-                                      listKey={`collectionsList`}
-                                      data={movieCollections}
-                                      renderItem={movieCollectionList}
-                                  />
-                              </View>
-                              <View style={{marginBottom: 25}}></View>
-                          </>
-                      )}
-                      style={{paddingBottom: 40}}
-                      scrollEnabled
-                      stickyHeaderHiddenOnScroll={true}
+            <FlatList
+                data={[0]}
+                estimatedItemSize={3}
+                decelerationRate={0.555}
+                renderItem={() => (
+                    <>
+                        <View style={{marginTop: 20, marginBottom: 20}}>
+                            <ListHeader headerName="Үзсэн гаргалтууд"/>
+                            <FlatList
+                                listKey={`episodesWatchedList`}
+                                data={watchedEpisodes}
+                                style={{marginTop: 10, marginLeft: 10}}
+                                scrollEnabled
+                                horizontal
+                                maxToRenderPerBatch={2}
+                                updateCellsBatchingPeriod={200}
+                                renderItem={renderWatchedEpisodeItem}/>
+                        </View>
+                        <View style={{marginBottom: 20}}>
+                            <ListHeader headerName="Шинээр нэмэгдсэн ангиуд"/>
+                            <FlatList
+                                estimatedItemSize={800}
+                                listKey={`episodesLatestList`}
+                                data={latestEpisodes}
+                                style={{marginTop: 10, marginLeft: 10}}
+                                scrollEnabled
+                                horizontal
+                                maxToRenderPerBatch={2}
+                                updateCellsBatchingPeriod={200}
+                                renderItem={renderEpisodeItem}/>
+                        </View>
+                        <View style={{marginBottom: 20}}>
+                            <ListHeader headerName="Орчуулж байгаа"/>
+                            <FlatList
+                                estimatedItemSize={800}
+                                listKey={`ongoingMovies`}
+                                data={ongoingMovies}
+                                style={{marginTop: 10, paddingLeft: 10}}
+                                scrollEnabled
+                                horizontal
+                                maxToRenderPerBatch={2}
+                                updateCellsBatchingPeriod={200}
+                                renderItem={renderMovieCard}/>
+                        </View>
+                        <View style={{marginBottom: 20}}>
+                            <ListHeader headerName="Орчуулж дууссан"/>
+                            <FlatList
+                                estimatedItemSize={800}
+                                listKey={`completedMovies`}
+                                data={completedMovies}
+                                style={{marginTop: 10, paddingLeft: 10}}
+                                scrollEnabled
+                                horizontal
+                                maxToRenderPerBatch={2}
+                                updateCellsBatchingPeriod={200}
+                                renderItem={renderMovieCard}/>
+                        </View>
+                        <View style={{marginBottom: 20}}>
+                            <FlatList
+                                listKey={`collectionsList`}
+                                data={movieCollections}
+                                renderItem={movieCollectionList}
+                            />
+                        </View>
+                        <View style={{marginBottom: 25}}></View>
+                    </>
+                )}
+                style={{paddingBottom: 40}}
+                scrollEnabled
+                stickyHeaderHiddenOnScroll={true}
             />
         </>
     )

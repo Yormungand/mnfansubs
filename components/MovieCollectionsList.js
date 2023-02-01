@@ -1,6 +1,5 @@
 import ListHeader from "./ListHeader";
 import {FlatList, View} from "react-native";
-import s from "../Utils/getRelativeSize";
 import * as React from "react"
 import {useEffect, useState} from "react";
 import MovieCard from "./MovieCard";
@@ -54,7 +53,7 @@ export default function MovieCollectionsList({item, style}) {
 
 
     return (
-        <View key={`collection-${item.collectionId}`}>
+        <View style={{marginBottom: 20}} key={`collection-${item.collectionId}`}>
             <ListHeader headerName={item.name}/>
             <FlatList
                 listKey={`collectionList-${item.collectionId}`}
@@ -62,8 +61,10 @@ export default function MovieCollectionsList({item, style}) {
                 style={{ marginTop: 10, marginLeft: 10 }}
                 horizontal
                 scrollEnabled={true}
-                // ListHeaderComponent={<View><Text>Home</Text></View>}
                 contentContainerStyle={{flexGrow: 1}}
+                maxToRenderPerBatch={1}
+                updateCellsBatchingPeriod={800}
+                initialNumToRender={1}
                 renderItem={renderMovieItem} />
         </View>
     )

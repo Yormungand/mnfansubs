@@ -30,10 +30,49 @@ export default function ClientProfile({navigation}) {
         setBirthDate(currentUser.birthDate);
         setEmail(currentUser.email);
         setPhone(currentUser.phone);
-        return () => {
-
-        };
     }, []);
+
+    useEffect(() => {
+        navigation.addListener("focus", e=>{
+            setLoginname(currentUser.loginname);
+            setSurname(currentUser.surname);
+            setGivenname(currentUser.givenname);
+            setGender(currentUser.gender);
+            setBirthDate(currentUser.birthDate);
+            setEmail(currentUser.email);
+            setPhone(currentUser.phone);
+        });
+        navigation.addListener("blur", e=>{
+            setLoginname(currentUser.loginname);
+            setSurname(currentUser.surname);
+            setGivenname(currentUser.givenname);
+            setGender(currentUser.gender);
+            setBirthDate(currentUser.birthDate);
+            setEmail(currentUser.email);
+            setPhone(currentUser.phone);
+        });
+        return () => {
+            navigation.addListener("focus", e=>{
+                setLoginname(currentUser.loginname);
+                setSurname(currentUser.surname);
+                setGivenname(currentUser.givenname);
+                setGender(currentUser.gender);
+                setBirthDate(currentUser.birthDate);
+                setEmail(currentUser.email);
+                setPhone(currentUser.phone);
+            });
+            navigation.addListener("blur", e=>{
+                setLoginname(currentUser.loginname);
+                setSurname(currentUser.surname);
+                setGivenname(currentUser.givenname);
+                setGender(currentUser.gender);
+                setBirthDate(currentUser.birthDate);
+                setEmail(currentUser.email);
+                setPhone(currentUser.phone);
+            });
+        }
+    }, [navigation]);
+
 
     const onDateChange = (event, selectedDate) => {
         const currentDate = selectedDate || birthDate;
@@ -45,30 +84,6 @@ export default function ClientProfile({navigation}) {
 
     return (
         <View style={style.container}>
-            {
-                dateShow && (
-                    <DateTimePicker
-                        style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            zIndex: 1,
-                            backgroundColor: '#f9f9f9',
-                            elevation: 15,
-                            shadowColor: '#000',
-                            shadowOffset: {width: 0, height: 10},
-                            shadowOpacity: 0.4,
-                            shadowRadius: 10,
-                        }}
-                        value={date}
-                        mode={'date'}
-                        is24hour={true}
-                        display="default"
-                        onChange={onDateChange}
-                    />
-                )
-            }
             <View>
                 <Text style={style.inputLabel}>Нэвтрэх нэр</Text>
                 <TextInput
@@ -101,34 +116,32 @@ export default function ClientProfile({navigation}) {
                     />
                 </View>
             </View>
-            <View style={style.inputWrapper}>
-                <View style={[{width: "47%"}]}>
-                    <Text style={style.inputLabel}>Хүйс</Text>
-                    <TextInput
-                        placeholder="Хүйс"
-                        placeholderTextColor={"#777"}
-                        style={style.profileInput}
-                        value={gender}
-                        editable={false}
-                    />
-                </View>
-                <View style={[{width: "47%"}]}>
-                    <Text style={style.inputLabel}>Төрсөн өдөр</Text>
-                    <TouchableOpacity
-                        activeOpacity={1}
-                        style={[style.profileInput, {flex: 1, alignItems: "flex-start", justifyContent: "center",}]}>
-                        <Text style={{color: "#999"}}>{birthDate ? birthDate : "Төрсөн өдөр"}</Text>
-                    </TouchableOpacity>
-                    {/*<TextInput
-                        placeholder="Төрсөн өдөр"
-                        placeholderTextColor={"#777"}
-                        style={style.profileInput}
-                        value={birthDate}
-                    />*/}
-                </View>
+            <View>
+                <Text style={style.inputLabel}>Хүйс</Text>
+                {/*<TextInput
+                    placeholder="Хүйс"
+                    placeholderTextColor={"#777"}
+                    style={style.profileInput}
+                    value={gender}
+                    editable={false}
+                />*/}
+                {gender === "FEMALE" && <Text style={style.profileInput}>Эмэгтэй</Text>}
+                {gender === "MALE" && <Text style={style.profileInput}>Эрэгтэй</Text>}
+                {gender === "OTHER" && <Text style={style.profileInput}>Бусад</Text>}
             </View>
             <View>
                 <Text style={style.inputLabel}>Төрсөн өдөр</Text>
+
+                <TextInput
+                    placeholder="Төрсөн өдөр"
+                    placeholderTextColor={"#777"}
+                    style={style.profileInput}
+                    value={birthDate}
+                    editable={false}
+                />
+            </View>
+            <View>
+                <Text style={style.inputLabel}>И-мэйл</Text>
                 <TextInput
                     placeholder="И-мэйл"
                     placeholderTextColor={"#777"}
@@ -138,7 +151,7 @@ export default function ClientProfile({navigation}) {
                 />
             </View>
             <View>
-                <Text style={style.inputLabel}>Төрсөн өдөр</Text>
+                <Text style={style.inputLabel}>Утас</Text>
                 <TextInput
                     placeholder="Гар утас"
                     placeholderTextColor={"#777"}

@@ -4,9 +4,36 @@ import colors from "../Utils/colors";
 import {TouchableRipple} from "react-native-paper";
 import {Ionicons} from "@expo/vector-icons";
 import {LinearGradient} from "expo-linear-gradient";
+import fetcher from "../Utils/fetcher";
+import {useEffect, useState} from "react";
+import {urls} from "../Utils/urls";
 
-
+const SCREEN_WIDTH = Dimensions.get("window").width
+const SCREEN_HEIGHT = Dimensions.get("window").height
 export default function Movie({navigation, route}) {
+
+    const movieId = route.params.movieId;
+    const [movie, setMovie] = useState({});
+
+    const getMovie = () => {
+        fetcher(`/api/movie/${movieId}`)
+            .then((data)=>{
+                console.log(`/api/movie/${movieId}`, data.status, data)
+                if (data.status === 200) {
+                    setMovie(data.payload)
+                }
+            })
+    }
+
+    useEffect(() => {
+        getMovie();
+        console.log(route.params)
+        return () => {
+
+        };
+    }, []);
+
+
     return (
         <>
             <View>
@@ -14,13 +41,13 @@ export default function Movie({navigation, route}) {
                     style={
                         {
                             position: "relative",
-                            height: 350,
-                            width: 375,
-                            overflow: "hidden"
+                            height: SCREEN_HEIGHT / 2,
+                            width: SCREEN_WIDTH,
+                            overflow: "hidden",
                         }
                     }>
                     <LinearGradient
-                        colors={["transparent","rgba(0,0,0,0.25)"]}
+                        colors={["transparent", "rgba(0,0,0,0.25)"]}
                         style={{
                             position: "absolute",
                             width: "100%",
@@ -32,8 +59,8 @@ export default function Movie({navigation, route}) {
                         style={{
                             position: "absolute",
                             top: 0,
-                            width: "100%",
-                            height: 563,
+                            width: SCREEN_WIDTH,
+                            height: SCREEN_HEIGHT / 2,
                             resizeMode: 'contain',
                             zIndex: 1,
                         }}
@@ -45,7 +72,7 @@ export default function Movie({navigation, route}) {
                         fontSize: 26,
                         fontWeight: "bold"
                     }}>
-                        {route.params.name} {Platform.OS === 'ios' ? 'ios' : 'android genesis sucks'}
+                        {movie.name}
                     </Text>
                     <View>
                         <TouchableRipple style={[Styles.button, {marginVertical: 10}]}

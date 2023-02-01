@@ -3,27 +3,27 @@ import {useNavigation} from "@react-navigation/native";
 
 const screenHeight = Dimensions.get("screen").height;
 const screenWidth = Dimensions.get("screen").width;
-export default function EpisodeCard({item}) {
+export default function WatchedEpisodeCard({item}) {
+
     const navigation = useNavigation()
+
     return (
         <>
             <View
-                key={`episode-${item.id}`}
+                key={`episode-${item.episode.id}`}
                 style={style.episodeCard}
-                activeOpacity={0.4}
             >
-                <TouchableOpacity activeOpacity={.7} onPress={() => navigation.navigate("Player", {episodeId: item.id})}>
+                <TouchableOpacity activeOpacity={.7} onPress={() => navigation.navigate("Player", {episodeId: item.episode.id})}>
                     {
-                        item.image &&
+                        item.episode.image &&
                         <Image
                             source={{uri: `http://www.mnfansubs.net/resource/mnfansubs/image/2022/01/27/2ug4r62nckuoqehq/%D0%92%D0%B8%D1%82%D1%87%D0%B5%D1%80_m.png`}}
                             style={style.episodeCardImage}
                         />
                     }
                     <View style={style.episodeCardNameWrapper} pointerEvents="none">
-                        <Text
-                            style={style.episodeCardName}>
-                            {item.movie.name}: {item.episodeNumber}-р анги
+                        <Text style={style.episodeCardName}>
+                            {item.episode.movie.name}: {item.episode.episodeNumber}-р анги
                         </Text>
                     </View>
                 </TouchableOpacity>

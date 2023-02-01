@@ -22,6 +22,7 @@ import Login from "./screens/Login";
 import ClientHome from "./screens/client/ClientHome";
 import ClientProfile from "./screens/client/ClientProfile";
 import ClientProfileEdit from "./screens/client/ClientProfileEdit";
+import ClientProfilePassword from "./screens/client/ClientProfilePassword";
 
 const theme = {
     roundness: 2,
@@ -59,6 +60,7 @@ const Stack = createNativeStackNavigator();
 function Main() {
     return (
         <>
+            <StatusBar style="light"/>
             <Stack.Navigator
                 screenOptions={{
                     headerStyle: {
@@ -123,8 +125,12 @@ function Main() {
                     )}
                 >
                 </Stack.Screen>
+                <Stack.Screen
+                    name={"ClientProfilePassword"}
+                    component={ClientProfilePassword}
+                >
+                </Stack.Screen>
             </Stack.Navigator>
-            <StatusBar style="light"/>
         </>
     )
 }
@@ -187,7 +193,7 @@ function TabNavigator() {
 
             </Tab.Screen>
             <Tab.Screen
-                name="Search"
+                name="Хайх"
                 component={Search}
                 options={{
                     // person-circle-outline

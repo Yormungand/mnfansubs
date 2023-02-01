@@ -1,9 +1,10 @@
-import {useRef, useState} from "react";
+import React, {useRef, useState} from "react";
 import mutator from "../Utils/mutator";
 import fetcher from "../Utils/fetcher";
 import {setGlobalState, useGlobalState} from "../hooks/useGlobalState";
 import {Text, TextInput, TouchableOpacity, View, StyleSheet, Image, ImageBackground} from "react-native";
 import {urls} from "../Utils/urls";
+import {Ionicons} from "@expo/vector-icons";
 
 const logo = require("../assets/logo-white.png")
 const bg = require("../assets/images/animebg.jpg")
@@ -12,6 +13,8 @@ export default function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [loginRequest, setLoginRequest] = useState("");
+
+    const [hidePassword, setHidePassword] = useState(true);
 
     const usernameRef = useRef();
     const passwordRef = useRef();
@@ -63,7 +66,7 @@ export default function Login() {
                     resizeMode="contain"
                     style={{width: 300, height: 50, marginBottom: 150}}/>
                 <TextInput
-                    placeholder={"Username"}
+                    placeholder={"Нэвтрэх нэр"}
                     placeholderTextColor={"#999"}
                     style={style.formInput}
                     onChangeText={text => setUsername(text)}
@@ -76,15 +79,28 @@ export default function Login() {
                     }}
                     ref={usernameRef}
                 />
-                <TextInput
-                    placeholder={"Password"}
-                    placeholderTextColor={"#999"}
-                    secureTextEntry
-                    style={style.formInput}
-                    onChangeText={text => setPassword(text)}
-                    onSubmitEditing={()=>login()}
-                    ref={passwordRef}
-                />
+                <View>
+                    <TextInput
+                        placeholder={"Нууц үг"}
+                        placeholderTextColor={"#999"}
+                        style={style.formInput}
+                        onChangeText={text => setPassword(text)}
+                        onSubmitEditing={()=>login()}
+                        ref={passwordRef}
+                        secureTextEntry={hidePassword}
+                    />
+                    <TouchableOpacity
+                        style={style.eyeButton}
+                        onPress={()=>setHidePassword(!hidePassword)}
+                    >
+                        {
+                            hidePassword ?
+                                <Ionicons name="eye-off-sharp" color={"#fff"} size={20}/>
+                                :
+                                <Ionicons name="eye-sharp" color={"#fff"} size={20}/>
+                        }
+                    </TouchableOpacity>
+                </View>
                 <TouchableOpacity
                     style={{
                         position: "relative",
@@ -127,5 +143,13 @@ const style = StyleSheet.create({
         width: 300,
         color: "#fff",
         backgroundColor: "rgba(22,22,22,.8)"
+    },
+    eyeButton: {
+        position: "absolute",
+        top: "30%",
+        right: 5,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        // backgroundColor: "rgba(22,22,22,.8)"
     }
 });

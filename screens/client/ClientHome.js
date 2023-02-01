@@ -1,11 +1,16 @@
 import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
-import {useGlobalState} from "../../hooks/useGlobalState";
+import {setGlobalState, useGlobalState} from "../../hooks/useGlobalState";
 import ClientExpireDate from "../../components/ClientExpireDate";
 
 export default function ClientHome({navigation}) {
 
     const [currentUser] = useGlobalState("currentUser")
+
+    const logout = () => {
+        setGlobalState("currentUser", null)
+        setGlobalState("userToken", null)
+    }
 
     return (
         <>
@@ -34,7 +39,7 @@ export default function ClientHome({navigation}) {
                     </View>
                     <View style={{justifyContent: "center"}}>
                         <Text style={{fontSize: 13, color: "#fff"}}>
-                            {currentUser.balance}
+                            {currentUser.balance}₮
                         </Text>
                         <Text style={{fontSize: 11, color: "#666"}}>
                             Хандив
@@ -49,10 +54,18 @@ export default function ClientHome({navigation}) {
                         </Text>
                     </View>
                 </View>
-                <View style={{marginTop: 20}}>
+                <View style={{flexDirection: "column", marginTop: 40, flex: 1}}>
                     <TouchableOpacity style={style.clientButton} onPress={()=>navigation.navigate("ClientProfile")}>
                         <Ionicons name="person-sharp" color={"#fff"} size={20}/>
                         <Text style={{marginLeft: 10, color: "#fff", fontSize: 18}}>Миний профайл</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={style.clientButton} onPress={()=>navigation.navigate("ClientProfilePassword")}>
+                        <Ionicons name="lock-closed" color={"#fff"} size={20}/>
+                        <Text style={{marginLeft: 10, color: "#fff", fontSize: 18}}>Нууц үг солих</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[style.clientButton, {marginTop: "auto", backgroundColor: "#d00004"}]} onPress={logout}>
+                        <Ionicons name="log-out-outline" color={"#fff"} size={24}/>
+                        <Text style={{marginLeft: 10, color: "#fff", fontSize: 18}}>Системээс гарах</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -76,10 +89,11 @@ const style = StyleSheet.create({
         backgroundColor: "#161616",
     },
     clientButton: {
+        marginBottom: 15,
+        borderRadius: 5,
         flexDirection: "row",
         alignItems: "center",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
+        padding: 15,
         backgroundColor: "#161616"
     }
 })
