@@ -1,5 +1,6 @@
 import {Dimensions, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {useNavigation} from "@react-navigation/native";
+import {urls} from "../Utils/urls";
 
 const screenHeight = Dimensions.get("screen").height;
 const screenWidth = Dimensions.get("screen").width;
@@ -17,7 +18,7 @@ export default function WatchedEpisodeCard({item}) {
                     {
                         item.episode.image &&
                         <Image
-                            source={{uri: `http://www.mnfansubs.net/resource/mnfansubs/image/2022/01/27/2ug4r62nckuoqehq/%D0%92%D0%B8%D1%82%D1%87%D0%B5%D1%80_m.png`}}
+                            source={{uri: `${urls}/resource/${encodeURIComponent(item.episode.image.path)}`}}
                             style={style.episodeCardImage}
                         />
                     }

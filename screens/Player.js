@@ -10,14 +10,15 @@ import * as NavigationBar from "expo-navigation-bar";
 import VideoPlayer from "expo-video-player";
 import PlayerControls from "../components/PlayerControls";
 import fetcher from "../Utils/fetcher";
+import {urls} from "../Utils/urls";
 
 
 const SCREEN_WIDTH = Dimensions.get("screen").width
 const SCREEN_HEIGHT = Dimensions.get("screen").height
 export default function Player({navigation, route}) {
 
+    // const episodeId = route.params.episodeId
     const episodeId = route.params.episodeId
-
     const [status, setStatus] = useState({})
     const [visibility, setVisibility] = useState(false)
     const [inFullscreen, setInFullscreen] = useState(false);
@@ -25,33 +26,16 @@ export default function Player({navigation, route}) {
     const [hideRequest, setHideRequest] = useState(new Date())
     const videoRef = useRef();
 
-    useEffect(() => {
-        let interval;
-        setHidden(false)
-        if (hidden) {
-            clearTimeout(interval)
-        } else {
-            interval = setTimeout(() => {
-                setHidden(true)
-            }, 3000)
-        }
-        if (playbackInstanceInfo.state === "Playing") {
-            setHidden(false)
-        }
-        console.log(hideRequest)
-        return () => {
+    const [video480, setVideo480] = useState("");
+    const [video720, setVideo720] = useState("");
+    const [video1080, setVideo1080] = useState("");
+    const [fetchStatus, setFetchStatus] = useState(false);
+    const [posterImage, setPosterImage] = useState("");
 
-        };
-    }, [hideRequest]);
+    const [playbackState, setPlaybackState] = useState("Buffering");
+    const [duration, setDuration] = useState(0);
+    const [currentTime, setCurrentTime] = useState(0);
 
-    useEffect(() => {
-        if (playbackInstance.current) {
-            playbackInstance.current.setStatusAsync({
-                shouldPlay: false
-            })
-        }
-        getEpisodeVideo()
-    }, [])
 
     const playbackInstance = useRef(null)
     const [playbackInstanceInfo, setPlaybackInstanceInfo] = useState({
@@ -60,10 +44,68 @@ export default function Player({navigation, route}) {
         state: 'Buffering',
     });
 
+    useEffect(() => {
+        let interval;
+        if (hidden) {
+            clearTimeout(interval)
+            setHidden(true);
+        } else {
+            interval = setTimeout(() => {
+                setHidden(true)
+            }, 3000)
+        }
+        return () => {
+
+        };
+    }, [hidden]);
+
+
+
+
+    useEffect(() => {
+        if (playbackInstance.current) {
+            playbackInstance.current.setStatusAsync({
+                shouldPlay: true
+            })
+        }
+        // getEpisodeVideo()
+    }, [video480, video720, video1080 ]);
+
+    useEffect(()=>{
+        fetcher(`/api/movie/episode/${episodeId}`)
+            .then((data)=>{
+                if (data.status === 200){
+                    // console.log(`/api/movie/episode/${episodeId}`, data)
+                    setPosterImage(`${urls}/resource/${data.payload.image.name}.${data.payload.image.ext}`)
+                }
+            })
+        fetcher(`/api/movie/episode/${episodeId}/video`)
+            .then((data)=>{
+                if (data.status === 200){
+                    // console.log(`/api/movie/episode/${episodeId}/video`, data)
+                    setVideo480(`${urls}/resource/${data.payload.video480.name}.${data.payload.video480.ext}`)
+                    setVideo720(`${urls}/resource/${data.payload.video720.name}.${data.payload.video720.ext}`)
+                    setVideo1080(`${urls}/resource/${data.payload.video1080.name}.${data.payload.video1080.ext}`)
+                }
+            })
+    },[episodeId])
+
+    useEffect(() => {
+        if (playbackInstanceInfo.state === "Paused")
+            /*playbackInstance.current.setStatusAsync({
+                shouldPlay: true
+            })*/
+        return () => {
+
+        };
+    }, [playbackInstanceInfo]);
+
+
+
     const getEpisodeVideo = () => {
         fetcher(`/api/movie/episode/${episodeId}/video`)
             .then((data) => {
-                console.log(`/api/movie/episode/${episodeId}/video`, data)
+                // console.log(`/api/movie/episode/${episodeId}/video`, data)
                 if (data.status === 400) {
                     if (data.payload.text === "Таны эрх хүрэлцэхгүй байна!"){
                         Alert.alert(
@@ -142,9 +184,9 @@ export default function Player({navigation, route}) {
                 resizeMode="contain"
                 onPlaybackStatusUpdate={updatePlaybackCallback}
                 ref={playbackInstance}
-                posterSource={"https://www.mnfansubs.net/resource/mnfansubs/image/2022/01/27/2ug4r62nckuoqehq/%D0%92%D0%B8%D1%82%D1%87%D0%B5%D1%80.png"}
+                posterSource={posterImage}
                 source={{
-                    uri: "https://www.mnfansubs.net/resource/mnfansubs/video/2022/09/10/tlhziem0bvuas2lp/MNF_Mortal_Kombat_Legends_-_Movie01_Scorpions_Revenge_BD480p83699760.mp4"
+                    uri: video480
                 }}
             />
 
@@ -152,7 +194,7 @@ export default function Player({navigation, route}) {
                 if (hidden) {
                     e.preventDefault();
                 }
-                setHideRequest(new Date())
+                setHidden(!hidden)
             }} style={[styles.controlsContainer, hidden ? {opacity: 0} : {opacity: 1}]}>
                 <View pointerEvents={hidden ? "none" : "auto"}>
                     <PlayerControls
@@ -164,7 +206,6 @@ export default function Player({navigation, route}) {
                     />
                 </View>
             </View>
-
             {/*
             <VideoPlayer
                 videoProps={{

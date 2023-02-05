@@ -17,6 +17,7 @@ import {Ionicons} from "@expo/vector-icons";
 import YoutubeIframe from "react-native-youtube-iframe";
 import BottomSheet from "./BottomSheet";
 import {useNavigation} from "@react-navigation/native";
+import {urls} from "../Utils/urls";
 
 
 const screenWidth = Dimensions.get("screen").width;
@@ -69,7 +70,7 @@ export default function MovieListCard({ movie }) {
             <TouchableOpacity activeOpacity={.5} style={style.movieListItem} onPress={() => setOpen(true)}>
                 <View style={{flex: 2}}>
                     <Image
-                        source={{uri: "http://www.mnfansubs.net/resource/mnfansubs/image/2022/01/27/2ug4r62nckuoqehq/%D0%92%D0%B8%D1%82%D1%87%D0%B5%D1%80_m.png"}}
+                        source={{uri: `${urls}/resource/${encodeURIComponent(movie.image.name)}_s.${movie.image.ext}`}}
                         style={style.listItemImage}
                     />
                 </View>
@@ -109,7 +110,7 @@ export default function MovieListCard({ movie }) {
                     <View style={{flexDirection: "column", justifyContent: "flex-end", flex: 1, padding: 10, width: screenWidth}}>
                         <View style={{flex: 1, flexDirection: "row",}}>
                             <Image
-                                source={{uri: "https://www.mnfansubs.net/resource/mnfansubs/image/2022/01/27/2ug4r62nckuoqehq/%D0%92%D0%B8%D1%82%D1%87%D0%B5%D1%80_m.png"}}
+                                source={{uri: `${urls}/resource/${movie.image.name}.${movie.image.ext}`}}
                                 style={{
                                     width: Platform.OS === 'ios' ? 95 : 85,
                                     height: Platform.OS === 'ios' ? 150 : 150,

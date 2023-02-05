@@ -101,6 +101,7 @@ function Main() {
                     component={Player}
                     options={{
                         headerShown: false,
+                        navigationBarHidden: true,
                         orientation: "landscape"
                     }}
                 >

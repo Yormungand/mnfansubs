@@ -28,7 +28,7 @@ const mutator = (path, data) => {
                     return res.json();
             })
             .then(jsonData=>{
-                console.log(`${urls}${path}`, status, jsonData)
+                // console.log(`${urls}${path}`, status, jsonData)
                 if (jsonData !== undefined)
                     return {status: status, payload: jsonData}
             })

@@ -7,7 +7,7 @@ import {useEffect, useState} from "react";
 
 const SCREEN_WIDTH = Dimensions.get("screen").width
 const SCREEN_HEIGHT = Dimensions.get("screen").height
-export default function VideoControls ({state, togglePlay, playbackInstanceInfo, setPlaybackInstanceInfo, playbackInstance}) {
+export default function VideoControls ({state, togglePlay, playbackInstanceInfo, setPlaybackInstanceInfo, playbackInstance, isHidden}) {
 
     const navigation = useNavigation()
     function renderIcon() {

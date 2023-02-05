@@ -16,6 +16,7 @@ import BottomSheet from "./BottomSheet";
 import {Ionicons} from "@expo/vector-icons";
 import colors from "../Utils/colors";
 import YoutubeIframe from "react-native-youtube-iframe";
+import {urls} from "../Utils/urls";
 
 const screenWidth = Dimensions.get("screen").width;
 const screenHeight = Dimensions.get("screen").height;
@@ -64,10 +65,13 @@ export default function MovieCard({navigation, item, style,}) {
             <View key={`movie-${item.id}`} style={[{marginRight: 10}, {style}]}>
                 <View style={{position: 'relative', flex: 1, borderRadius: 10, overflow: "hidden"}} rippleColor='rgba(255,255,255,.5)'>
                     <View>
-                        <Image
-                            source={{uri: "http://www.mnfansubs.net/resource/mnfansubs/image/2022/01/27/2ug4r62nckuoqehq/%D0%92%D0%B8%D1%82%D1%87%D0%B5%D1%80_m.png"}}
-                            style={styles.movieCardImage}
-                        />
+                        {
+                            item.image &&
+                            <Image
+                                source={{uri: `${urls}/resource/${encodeURIComponent(item.image.name)}_s.${item.image.ext}`}}
+                                style={styles.movieCardImage}
+                            />
+                        }
                         {/*<View style={{position: 'absolute', paddingHorizontal: s(5), bottom: s(3), zIndex: 5}} pointerEvents='none'>*/}
                         {/*    <Text style={{color: '#fff', fontSize: 13}}>Mortal kombat, one piece: {item}-р анги</Text>*/}
                         {/*</View>*/}
@@ -85,7 +89,7 @@ export default function MovieCard({navigation, item, style,}) {
                     <View style={{flexDirection: "column", justifyContent: "flex-end", flex: 1, padding: 10, width: screenWidth}}>
                         <View style={{flex: 1, flexDirection: "row",}}>
                             <Image
-                                source={{uri: "https://www.mnfansubs.net/resource/mnfansubs/image/2022/01/27/2ug4r62nckuoqehq/%D0%92%D0%B8%D1%82%D1%87%D0%B5%D1%80_m.png"}}
+                                source={{uri: `${urls}/resource/${encodeURIComponent(item.image.name)}.${item.image.ext}`}}
                                 style={{
                                     width: Platform.OS === 'ios' ? 95 : 85,
                                     height: Platform.OS === 'ios' ? 150 : 150,

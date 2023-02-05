@@ -1,6 +1,6 @@
-export const DEV = true;
+export const DEV = false;
 
-export const urls = DEV ? "http://192.168.0.153:8085" : "https://www.mnfansubs.net";
+export const urls = DEV ? "http://192.168.0.141:8085" : "https://www.mnfansubs.net";
 
 export const STATUS = {
     PENDING: {
