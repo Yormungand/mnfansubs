@@ -23,9 +23,16 @@ export default function WatchedEpisodeCard({item}) {
                         />
                     }
                     <View style={style.episodeCardNameWrapper} pointerEvents="none">
-                        <Text style={style.episodeCardName}>
-                            {item.episode.movie.name}: {item.episode.episodeNumber}-р анги
-                        </Text>
+                        {
+                            item.episode.type.alias === "movie" ?
+                                <Text style={style.episodeCardName}>
+                                    {item.episode.movie.name}: {item.episode.name}
+                                </Text>
+                                :
+                                <Text style={style.episodeCardName}>
+                                    {item.episode.movie.name}: {item.episode.episodeNumber}-р анги
+                                </Text>
+                        }
                     </View>
                 </TouchableOpacity>
             </View>

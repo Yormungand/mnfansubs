@@ -95,7 +95,10 @@ export default function MovieCard({navigation, item, style,}) {
             <BottomSheet open={open} onClose={handleClose} closeRequested={closeRequested}>
                 <>
                     <View style={{flexDirection: "column", justifyContent: "flex-end", flex: 1, padding: 10, width: windowWidth}}>
-                        <View onTouchEnd={e=>navigation.navigate("Movie", {movieId: `${item.id}`, name: `${item.name}`})} style={{flex: 1, flexDirection: "row",}}>
+                        <View onTouchEnd={e=> {
+                            setOpen(false)
+                            navigation.navigate("Movie", {movieId: `${item.id}`, name: `${item.name}`})
+                        }} style={{flex: 1, flexDirection: "row",}}>
                             <Image
                                 source={{uri: `${urls}/resource/${encodeURIComponent(item.image.name)}.${item.image.ext}`}}
                                 style={{

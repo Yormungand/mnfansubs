@@ -19,8 +19,9 @@ import fetcher from "../Utils/fetcher";
 import React, {useEffect, useState} from "react";
 import {urls} from "../Utils/urls";
 import {Picker} from "@react-native-picker/picker";
-import SectionEpisodeItem from "../components/SectionEpisodeItem";
+import EpisodeItemOfMovie from "../components/EpisodeItemOfMovie";
 import {SceneMap, TabView} from "react-native-tab-view";
+import MovieEpisodeOfMovie from "../components/MovieEpisodeOfMovie";
 
 const SCREEN_WIDTH = Dimensions.get("window").width
 const SCREEN_HEIGHT = Dimensions.get("window").height
@@ -43,7 +44,7 @@ export default function Movie({navigation, route}) {
         code: "episode"
     });
 
-    const getMovie = () => {
+    const getMovie = (callback) => {
         fetcher(`/api/movie/${movieId}`)
             .then((data) => {
                 // console.log(`/api/movie/${movieId}`, data.status, data)
@@ -51,6 +52,8 @@ export default function Movie({navigation, route}) {
                     setMovie(data.payload)
                 }
             })
+        if (callback !== undefined && typeof callback === "function")
+            callback();
     }
 
     const getDefaultSection = () => {
@@ -64,51 +67,74 @@ export default function Movie({navigation, route}) {
         })
     }
 
-    const fetchEpisodeTypes = () => {
+    const fetchEpisodeTypes = (callback) => {
         fetcher(`/api/movie/episode/type`)
             .then((data) => {
                 if (data.status === 200) {
                     setEpisodeTypes(data.payload)
                 }
             })
+        if (callback !== undefined && typeof callback === "function")
+            callback();
     }
 
-    const fetchOVAs = () => {
+    const fetchOVAs = (callback) => {
         fetcher(`/api/movie/episode/list?movieId=${movie.id}&typeId=2`)
             .then((data) => {
-                if (data.status === 200)
+                if (data.status === 200) {
                     setOvaEpisodes(data.payload);
+                }
             })
+        if (callback !== undefined && typeof callback === "function")
+            callback();
     }
-    const fetchMovies = () => {
+    const fetchMovies = (callback) => {
         fetcher(`/api/movie/episode/list?movieId=${movie.id}&typeId=3`)
             .then((data) => {
-                if (data.status === 200)
+                if (data.status === 200) {
                     setMovieEpisodes(data.payload);
+                }
             })
+        if (callback !== undefined && typeof callback === "function")
+            callback();
     }
-    const fetchSongs = () => {
+    const fetchSongs = (callback) => {
         fetcher(`/api/movie/episode/list?movieId=${movie.id}&typeId=4`)
             .then((data) => {
-                if (data.status === 200)
+                if (data.status === 200) {
                     setSongEpisodes(data.payload);
+                }
             })
+        if (callback !== undefined && typeof callback === "function")
+            callback();
     }
 
-    const fetchSectionEpisodes = () => {
-        fetcher(`/api/movie/episode/list?sectionId=${selSection}&typeId=1`)
+    const fetchSectionEpisodes = (callback) => {
+        let url;
+        if (selSection !== null) {
+            url = `/api/movie/episode/list?sectionId=${selSection}&typeId=1`;
+        } else {
+            url = `/api/movie/episode/list?movieId=${movie.id}&typeId=1`;
+        }
+        fetcher(url)
             .then((data) => {
-                if (data.status === 200)
-                    setEpisodes(data.payload)
+                if (data.status === 200) {
+                    setEpisodes(data.payload);
+                }
             })
+        if (callback !== undefined && typeof callback === "function")
+            callback();
     }
 
-    const fetchMovieEpisodes = () => {
-        fetcher(`/api/movie/episode/list?movieId=${movie.id}&typeId=1`)
-            .then((data) => {
-                if (data.status === 200)
-                    setEpisodes(data.payload)
-            })
+    const checkAvailableLists = () => {
+        const hasEpisodes = episodes.length > 0 ?? true
+        const hasOvaEpisodes = ovaEpisodes.length > 0 ?? true
+        const hasMovieEpisodes = movieEpisodes.length > 0 ?? true
+        const hasSongEpisodes = songEpisodes.length > 0 ?? true
+        console.log("hasEpisodes", hasEpisodes, "---", episodes.length)
+        console.log("hasOvaEpisodes", hasOvaEpisodes, "---", ovaEpisodes.length)
+        console.log("hasMovieEpisodes", hasMovieEpisodes, "---", movieEpisodes.length)
+        console.log("hasSongEpisodes", hasSongEpisodes, "---", songEpisodes.length)
     }
 
     useEffect(() => {
@@ -133,14 +159,26 @@ export default function Movie({navigation, route}) {
 
     useEffect(() => {
         if (movie) {
-            if (selSection !== null) {
-                fetchSectionEpisodes();
-            } else {
-                fetchMovieEpisodes();
-            }
+            fetchSectionEpisodes(() => {
+                checkAvailableLists();
+            });
             fetchOVAs();
             fetchMovies();
-            fetchSongs();
+            fetchSongs(()=>{
+                const hasEpisodes = episodes.length > 0 ?? true
+                const hasOvaEpisodes = ovaEpisodes.length > 0 ?? true
+                const hasMovieEpisodes = movieEpisodes.length > 0 ?? true
+                const hasSongEpisodes = songEpisodes.length > 0 ?? true
+                if (!hasEpisodes && hasOvaEpisodes) {
+                    setTabState({tabName: "OVA", code: "ova"})
+                }
+                if (!hasOvaEpisodes && hasMovieEpisodes) {
+                    setTabState({tabName: "Movie", code: "movie"})
+                }
+                if (!hasMovieEpisodes && hasSongEpisodes) {
+                    setTabState({tabName: "SONG", code: "song"})
+                }
+            });
         }
     }, [movie])
     useEffect(() => {
@@ -152,7 +190,9 @@ export default function Movie({navigation, route}) {
         }
     }, [selSection])
 
-    const renderEpisode = ({item}) => <SectionEpisodeItem item={item} tabState={tabState}/>
+    const renderEpisode = ({item}) => <EpisodeItemOfMovie item={item} tabState={tabState}/>
+
+    const renderMovie = ({item}) => <MovieEpisodeOfMovie item={item} tabState={tabState}/>;
 
     const renderEpisodes = () => {
         return (
@@ -163,7 +203,7 @@ export default function Movie({navigation, route}) {
                         <PickerField
                             value={selSection}
                             label={"Section"}
-                            options={sections.reverse()}
+                            options={sections}
                             onChange={(value) => setSelSection(value)}
                         />
                     }
@@ -191,19 +231,6 @@ export default function Movie({navigation, route}) {
             </>
         );
     }
-    const renderMovies = () => {
-        return (
-            <>
-                <View style={{marginVertical: 20}}>
-                    <FlatList
-                        listKey={`movieEpisodes-${movie.id}`}
-                        data={movieEpisodes}
-                        renderItem={renderEpisode}
-                    />
-                </View>
-            </>
-        );
-    }
     const renderSongs = () => {
         return (
             <>
@@ -212,6 +239,27 @@ export default function Movie({navigation, route}) {
                         listKey={`movieEpisodes-${movie.id}`}
                         data={songEpisodes}
                         renderItem={renderEpisode}
+                    />
+                </View>
+            </>
+        );
+    }
+
+    const renderMovies = () => {
+        return (
+            <>
+                <View style={{marginVertical: 20}}>
+                    <FlatList
+                        style={{
+                            marginLeft: -10
+                        }}
+                        listKey={`movieEpisodes-${movie.id}`}
+                        data={movieEpisodes}
+                        numColumns={2}
+                        ItemSeparatorComponent={() => (
+                            <View style={{margin: 5}}/>
+                        )}
+                        renderItem={renderMovie}
                     />
                 </View>
             </>
@@ -243,110 +291,276 @@ export default function Movie({navigation, route}) {
                                     style={style.movieImage}
                                 />
                             </SafeAreaView>
-                            <View style={{marginTop: 10, paddingHorizontal: 10}}>
-                                <Text style={style.movieName}>
-                                    {movie.name}
-                                </Text>
-                                <Text
-                                    numberOfLines={8}
-                                    style={style.movieDescription}>
-                                    {movie.description}
-                                </Text>
-                                <View style={style.movieTab}>
-                                    <ScrollView
-                                        style={{position: "relative", zIndex: 3, bottom: 0}}
-                                        horizontal
-                                    >
-                                        {
-                                            episodes.length > 0 &&
-                                            <TouchableOpacity
-                                                activeOpacity={.5}
-                                                onPress={()=>{setTabState({tabName: "Ангиуд",code: "episode"})}}
-                                                style={[
-                                                    style.movieTabButton,
-                                                    tabState.code === "episode" && style.movieTabButtonActive
-                                                ]}>
-                                                <Text style={[
-                                                    style.movieTabButtonText,
-                                                    tabState.code === "episode" && style.movieTabButtonActiveText
-                                                ]}>
-                                                    Ангиуд
-                                                </Text>
-                                            </TouchableOpacity>
-                                        }
-                                        {
-                                            ovaEpisodes.length > 0 &&
-                                            <TouchableOpacity
-                                                activeOpacity={.5}
-                                                onPress={()=>setTabState({tabName: "Тусгай анги",code: "ova"})}
-                                                style={[
-                                                    style.movieTabButton,
-                                                    tabState.code === "ova" && style.movieTabButtonActive
-                                                ]}>
-                                                <Text style={[
-                                                    style.movieTabButtonText,
-                                                    tabState.code === "ova" && style.movieTabButtonActiveText
-                                                ]}>
-                                                    Тусгай анги
-                                                </Text>
-                                            </TouchableOpacity>
-                                        }
-                                        {
-                                            movieEpisodes.length > 0 &&
-                                            <TouchableOpacity
-                                                activeOpacity={.5}
-                                                onPress={()=>setTabState({tabName: "Кино", code: "movie"})}
-                                                style={[
-                                                    style.movieTabButton,
-                                                    tabState.code === "movie" && style.movieTabButtonActive
-                                                ]}>
-                                                <Text style={[
-                                                    style.movieTabButtonText,
-                                                    tabState.code === "movie" && style.movieTabButtonActiveText
-                                                ]}>
-                                                    Кино
-                                                </Text>
-                                            </TouchableOpacity>
-                                        }
-                                        {
-                                            songEpisodes.length > 0 &&
-                                            <TouchableOpacity
-                                                activeOpacity={.5}
-                                                onPress={()=>setTabState({tabName: "Дуу",code: "song"})}
-                                                style={[
-                                                    style.movieTabButton,
-                                                    tabState.code === "song" && style.movieTabButtonActive
-                                                ]}>
-                                                <Text style={[
-                                                    style.movieTabButtonText,
-                                                    tabState.code === "song" && style.movieTabButtonActiveText
-                                                ]}>
-                                                    Дуу
-                                                </Text>
-                                            </TouchableOpacity>
-                                        }
-                                    </ScrollView>
-                                    <View style={style.movieTabLowerBorder}/>
-                                </View>
-                            </View>
-                            <View style={{paddingHorizontal: 10}}>
-                                {
-                                    tabState.code === "episode" &&
-                                    renderEpisodes()
-                                }
-                                {
-                                    tabState.code === "ova" &&
-                                    renderOVA()
-                                }
-                                {
-                                    tabState.code === "movie" &&
-                                    renderMovies()
-                                }
-                            </View>
+                            {
+                                movie.type.alias === "movie" ||
+                                movie.type.alias === "animeMovie" &&
+                                episodes.length === 1 ?
+                                    <>
+                                        <View style={{marginVertical: 10, paddingHorizontal: 10}}>
+                                            <Text style={style.movieName}>
+                                                {movie.name}
+                                            </Text>
+                                            <Text
+                                                numberOfLines={8}
+                                                style={style.movieDescription}>
+                                                {movie.description}
+                                            </Text>
+                                        </View>
+                                        <TouchableOpacity
+                                            style={{
+                                                borderRadius: 5,
+                                                marginHorizontal: 10,
+                                                paddingVertical: 10,
+                                                paddingHorizontal: 15,
+                                                flexDirection: "row",
+                                                flex: 1,
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                backgroundColor: "#fff",
+                                            }}
+                                            activeOpacity={.5}
+                                            onPress={() => navigation.navigate("Player", {episodeId: episodes[0].id})}
+                                        >
+                                            <Ionicons name={"play"} size={28} color={"#161616"}/>
+                                            <Text
+                                                style={{
+                                                    marginLeft: 10,
+                                                    fontSize: 22,
+                                                    fontWeight: "600",
+                                                    color: "#161616"
+                                                }}
+                                            >
+                                                Тоглуулах
+                                            </Text>
+                                        </TouchableOpacity>
+                                    </>
+                                    :
+                                    <>
+                                        <View style={{marginTop: 10, paddingHorizontal: 10}}>
+                                            <Text style={style.movieName}>
+                                                {movie.name}
+                                            </Text>
+                                            <Text
+                                                numberOfLines={8}
+                                                style={style.movieDescription}>
+                                                {movie.description}
+                                            </Text>
+                                            <View style={style.movieTab}>
+                                                <ScrollView
+                                                    style={{
+                                                        position: "relative",
+                                                        zIndex: 3,
+                                                        bottom: 0,
+                                                    }}
+                                                    horizontal
+                                                >
+
+                                                    {
+                                                        episodes.length > 0 &&
+                                                        <TouchableOpacity
+                                                            activeOpacity={.5}
+                                                            onPress={() => {
+                                                                setTabState({tabName: "Ангиуд", code: "episode"})
+                                                            }}
+                                                            style={[
+                                                                style.movieTabButton,
+                                                                tabState.code === "episode" && style.movieTabButtonActive
+                                                            ]}>
+                                                            <Text style={[
+                                                                style.movieTabButtonText,
+                                                                tabState.code === "episode" && style.movieTabButtonActiveText
+                                                            ]}>
+                                                                Ангиуд
+                                                            </Text>
+                                                        </TouchableOpacity>
+                                                    }
+                                                    {
+                                                        ovaEpisodes.length > 0 &&
+                                                        <TouchableOpacity
+                                                            activeOpacity={.5}
+                                                            onPress={() => setTabState({
+                                                                tabName: "Тусгай анги",
+                                                                code: "ova"
+                                                            })}
+                                                            style={[
+                                                                style.movieTabButton,
+                                                                tabState.code === "ova" && style.movieTabButtonActive
+                                                            ]}>
+                                                            <Text style={[
+                                                                style.movieTabButtonText,
+                                                                tabState.code === "ova" && style.movieTabButtonActiveText
+                                                            ]}>
+                                                                Тусгай анги
+                                                            </Text>
+                                                        </TouchableOpacity>
+                                                    }
+                                                    {
+                                                        movieEpisodes.length > 0 &&
+                                                        <TouchableOpacity
+                                                            activeOpacity={.5}
+                                                            onPress={() => setTabState({
+                                                                tabName: "Кино",
+                                                                code: "movie"
+                                                            })}
+                                                            style={[
+                                                                style.movieTabButton,
+                                                                tabState.code === "movie" && style.movieTabButtonActive
+                                                            ]}>
+                                                            <Text style={[
+                                                                style.movieTabButtonText,
+                                                                tabState.code === "movie" && style.movieTabButtonActiveText
+                                                            ]}>
+                                                                Кино
+                                                            </Text>
+                                                        </TouchableOpacity>
+                                                    }
+                                                    {
+                                                        songEpisodes.length > 0 &&
+                                                        <TouchableOpacity
+                                                            activeOpacity={.5}
+                                                            onPress={() => setTabState({tabName: "Дуу", code: "song"})}
+                                                            style={[
+                                                                style.movieTabButton,
+                                                                tabState.code === "song" && style.movieTabButtonActive
+                                                            ]}>
+                                                            <Text style={[
+                                                                style.movieTabButtonText,
+                                                                tabState.code === "song" && style.movieTabButtonActiveText
+                                                            ]}>
+                                                                Дуу
+                                                            </Text>
+                                                        </TouchableOpacity>
+                                                    }
+                                                </ScrollView>
+                                                <View style={style.movieTabLowerBorder}/>
+                                            </View>
+                                        </View>
+                                        <View style={{paddingHorizontal: 10}}>
+                                            {
+                                                tabState.code === "episode" &&
+                                                renderEpisodes()
+                                            }
+                                            {
+                                                tabState.code === "ova" &&
+                                                renderOVA()
+                                            }
+                                            {
+                                                tabState.code === "movie" &&
+                                                renderMovies()
+                                            }
+                                        </View>
+                                    </>
+                            }
                         </>
                     )}/>
             }
         </>
+    )
+}
+
+function SeriesView({movie, episodes, ovaEpisodes, movieEpisodes, songEpisodes, tabState, setTabState}) {
+    return (
+        <>
+            <View style={{marginTop: 10, paddingHorizontal: 10}}>
+                <Text style={style.movieName}>
+                    {movie.name}
+                </Text>
+                <Text
+                    numberOfLines={8}
+                    style={style.movieDescription}>
+                    {movie.description}
+                </Text>
+                <View style={style.movieTab}>
+                    <ScrollView
+                        style={{
+                            position: "relative",
+                            zIndex: 3,
+                            bottom: 0
+                        }}
+                        horizontal
+                    >
+
+                        {
+                            episodes.length > 0 &&
+                            <TouchableOpacity
+                                activeOpacity={.5}
+                                onPress={() => {
+                                    setTabState({tabName: "Ангиуд", code: "episode"})
+                                }}
+                                style={[
+                                    style.movieTabButton,
+                                    tabState.code === "episode" && style.movieTabButtonActive
+                                ]}>
+                                <Text style={[
+                                    style.movieTabButtonText,
+                                    tabState.code === "episode" && style.movieTabButtonActiveText
+                                ]}>
+                                    Ангиуд
+                                </Text>
+                            </TouchableOpacity>
+                        }
+                        {
+                            ovaEpisodes.length > 0 &&
+                            <TouchableOpacity
+                                activeOpacity={.5}
+                                onPress={() => setTabState({tabName: "Тусгай анги", code: "ova"})}
+                                style={[
+                                    style.movieTabButton,
+                                    tabState.code === "ova" && style.movieTabButtonActive
+                                ]}>
+                                <Text style={[
+                                    style.movieTabButtonText,
+                                    tabState.code === "ova" && style.movieTabButtonActiveText
+                                ]}>
+                                    Тусгай анги
+                                </Text>
+                            </TouchableOpacity>
+                        }
+                        {
+                            movieEpisodes.length > 0 &&
+                            <TouchableOpacity
+                                activeOpacity={.5}
+                                onPress={() => setTabState({tabName: "Кино", code: "movie"})}
+                                style={[
+                                    style.movieTabButton,
+                                    tabState.code === "movie" && style.movieTabButtonActive
+                                ]}>
+                                <Text style={[
+                                    style.movieTabButtonText,
+                                    tabState.code === "movie" && style.movieTabButtonActiveText
+                                ]}>
+                                    Кино
+                                </Text>
+                            </TouchableOpacity>
+                        }
+                        {
+                            songEpisodes.length > 0 &&
+                            <TouchableOpacity
+                                activeOpacity={.5}
+                                onPress={() => setTabState({tabName: "Дуу", code: "song"})}
+                                style={[
+                                    style.movieTabButton,
+                                    tabState.code === "song" && style.movieTabButtonActive
+                                ]}>
+                                <Text style={[
+                                    style.movieTabButtonText,
+                                    tabState.code === "song" && style.movieTabButtonActiveText
+                                ]}>
+                                    Дуу
+                                </Text>
+                            </TouchableOpacity>
+                        }
+                    </ScrollView>
+                    <View style={style.movieTabLowerBorder}/>
+                </View>
+            </View>
+        </>
+    )
+}
+
+function MovieView() {
+    return (
+        <></>
     )
 }
 
@@ -422,8 +636,8 @@ const style = StyleSheet.create({
     },
     movieTabButton: {
         position: "relative",
-        bottom: 0,
-        zIndex: 3,
+        bottom: -1,
+        zIndex: 4,
         marginRight: 10,
         paddingVertical: 7,
         paddingHorizontal: 10,
@@ -433,11 +647,14 @@ const style = StyleSheet.create({
         color: "#999",
     },
     movieTabButtonActive: {
-        zIndex: 3,
+        position: "relative",
+        zIndex: 4,
+        borderTopStartRadius: 3,
+        borderTopEndRadius: 3,
         borderTopWidth: .5,
         borderLeftWidth: .5,
         borderRightWidth: .5,
-        borderBottomWidth: .5,
+        borderBottomWidth: 2,
         borderTopColor: "rgba(255,255,255,1)",
         borderRightColor: "rgba(255,255,255,1)",
         borderLeftColor: "rgba(255,255,255,1)",
@@ -451,9 +668,9 @@ const style = StyleSheet.create({
         bottom: 0,
         left: 0,
         height: 1,
-        zIndex: 0,
+        zIndex: 1,
         width: "100%",
         borderBottomWidth: .5,
-        borderBottomColor: "rgba(255,255,255,1)",
+        borderBottomColor: "rgba(255,255,255,.5)",
     }
 })

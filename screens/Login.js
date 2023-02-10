@@ -41,7 +41,6 @@ export default function Login() {
     const login = () => {
         mutator(`/api/core/signin`, {loginname: username, password: password})
             .then(({data, status}) => {
-                console.log(`${urls}/api/core/signin`, {loginname: username, password: password}, data, status)
                 if (status === 200) {
                     AsyncStorage.setItem("rememberedLoginname", username).then()
                     AsyncStorage.setItem("asyncRemember", "true").then()
