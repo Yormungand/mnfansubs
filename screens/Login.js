@@ -1,10 +1,22 @@
-import React, {useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import mutator from "../Utils/mutator";
 import fetcher from "../Utils/fetcher";
 import {setGlobalState, useGlobalState} from "../hooks/useGlobalState";
-import {Text, TextInput, TouchableOpacity, View, StyleSheet, Image, ImageBackground} from "react-native";
+import {
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+    StyleSheet,
+    Image,
+    ImageBackground,
+    Alert
+} from "react-native";
 import {urls} from "../Utils/urls";
 import {Ionicons} from "@expo/vector-icons";
+
+import * as LocalAuthentication from "expo-local-authentication";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const logo = require("../assets/logo-white.png")
 const bg = require("../assets/images/animebg.jpg")
@@ -16,18 +28,35 @@ export default function Login() {
 
     const [hidePassword, setHidePassword] = useState(true);
 
+    const [localAuthType, setLocalAuthType] = useState("");
+    const [useLocalAuth, setUseLocalAuth] = useState(false);
+
+    const [biometricSupported, setBiometricSupported] = useState(false);
+
+    const [rememberMe, setRememberMe] = useState(false);
+
     const usernameRef = useRef();
     const passwordRef = useRef();
 
     const login = () => {
         mutator(`/api/core/signin`, {loginname: username, password: password})
             .then(({data, status}) => {
-                // console.log(`${urls}/api/core/signin`, {loginname: username, password: password}, status)
+                console.log(`${urls}/api/core/signin`, {loginname: username, password: password}, data, status)
                 if (status === 200) {
+                    AsyncStorage.setItem("rememberedLoginname", username).then()
+                    AsyncStorage.setItem("asyncRemember", "true").then()
                     fetcher(`/api/core/signedUser`)
-                        .then((data)=> {
-                            if (data.status === 200)
+                        .then((data) => {
+                            if (data.status === 200) {
                                 setGlobalState("currentUser", data.payload)
+                                console.log("CURRENT USER", data.payload)
+                            }
+                        })
+                    fetcher(`/api/movie/user/subscription/checkExpired`)
+                        .then((data)=>{
+                            if (data.status === 200) {
+                                console.log(`subscription status`, data.payload)
+                            }
                         })
                     fetcher(`/api/core/csrf`)
                         .then((data) => {
@@ -39,9 +68,61 @@ export default function Login() {
                             if (data.status === 200)
                                 console.log(data.payload)
                         })
+                } else {
+                    Alert.alert(`Буруу`, `Хэрэглэгчийн нэр эсвэл нууц үг буруу байна!`)
                 }
             })
     }
+
+    async function scanFingerPrint() {
+        let message;
+        if (localAuthType === "fingerprint") {
+            message = "Хурууны хээгээ уншуулна уу."
+        }
+        let result = await LocalAuthentication.authenticateAsync({promptMessage: "Хурууны хээгээ уншуулна уу."})
+
+        if (result.success) {
+            if (loginRequest === "fingerprint") {
+
+            }
+        }
+    }
+
+    useEffect(() => {
+        AsyncStorage.getItem("asyncRemember").then((asyncRemember)=>{
+            if (asyncRemember) {
+                setRememberMe(true);
+            }
+        })
+        AsyncStorage.getItem("rememberedLoginname").then((rememberedLoginname)=>{
+            setUsername(rememberedLoginname);
+        })
+    }, []);
+
+
+    /**
+     * todo Fingerprint
+     */
+    /*useEffect(() => {
+        (async () => {
+                const compatible = await LocalAuthentication.hasHardwareAsync();
+                console.log(compatible)
+                setBiometricSupported(compatible)
+            }
+        )();
+    });*/
+
+
+    /**
+     * todo Fingerprint
+     */
+    /*useEffect(() => {
+        scanFingerPrint()
+        return () => {
+
+        };
+    }, [loginRequest]);*/
+
 
     return (
         <>
@@ -74,7 +155,7 @@ export default function Login() {
                     returnKeyType={"next"}
                     blurOnSubmit={false}
                     value={username}
-                    onSubmitEditing={()=> {
+                    onSubmitEditing={() => {
                         passwordRef.current.focus()
                     }}
                     ref={usernameRef}
@@ -85,13 +166,13 @@ export default function Login() {
                         placeholderTextColor={"#999"}
                         style={style.formInput}
                         onChangeText={text => setPassword(text)}
-                        onSubmitEditing={()=>login()}
+                        onSubmitEditing={() => login()}
                         ref={passwordRef}
                         secureTextEntry={hidePassword}
                     />
                     <TouchableOpacity
                         style={style.eyeButton}
-                        onPress={()=>setHidePassword(!hidePassword)}
+                        onPress={() => setHidePassword(!hidePassword)}
                     >
                         {
                             hidePassword ?
@@ -101,11 +182,44 @@ export default function Login() {
                         }
                     </TouchableOpacity>
                 </View>
+                <View style={{marginTop: 15, width: 300}}>
+                    <TouchableOpacity
+                        activeOpacity={.5}
+                        onPress={() => setRememberMe(!rememberMe)}
+                        style={{flexDirection: "row", alignItems: "center"}}
+                    >
+                        {
+                            rememberMe ?
+                                <Ionicons name={"checkmark"} size={24} color={"#fff"}/>
+                                :
+                                <Ionicons name={"close"} size={24} color={"#fff"}/>
+                        }
+                        <Text style={{marginLeft: 10, color: "#fff", fontSize: 16}}>Нэвтрэх нэр сануулах</Text>
+                    </TouchableOpacity>
+                </View>
+                {/*{todo Fingerprint
+                    biometricSupported &&
+                    <View style={{marginTop: 15, width: 300}}>
+                        <TouchableOpacity
+                            activeOpacity={.5}
+                            onPress={() => setUseLocalAuth(!useLocalAuth)}
+                            style={{flexDirection: "row", alignItems: "center"}}
+                        >
+                            {
+                                useLocalAuth ?
+                                    <Ionicons name={"checkmark"} size={24} color={"#fff"}/>
+                                    :
+                                    <Ionicons name={"close"} size={24} color={"#fff"}/>
+                            }
+                            <Text style={{marginLeft: 10, color: "#fff", fontSize: 16}}>Use finger</Text>
+                        </TouchableOpacity>
+                    </View>
+                }*/}
                 <TouchableOpacity
                     style={{
                         position: "relative",
                         borderRadius: 5,
-                        marginTop: 30,
+                        marginTop: 15,
                         flexDirection: "row",
                         alignItems: "center",
                         justifyContent: "center",
@@ -115,7 +229,13 @@ export default function Login() {
                         backgroundColor: "#161616"
                     }}
                     activeOpacity={.7}
-                    onPress={() => login()}
+                    onPress={() => {
+                        login();
+                        /*if (useLocalAuth)
+                            setLoginRequest("localAuth")
+                        else
+                            setLoginRequest("normal")*/
+                    }}
                 >
                     <Text style={{color: "#c1c1c1", fontSize: 18}}>Нэвтрэх</Text>
                 </TouchableOpacity>

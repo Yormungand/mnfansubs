@@ -1,5 +1,6 @@
 import {urls} from "./urls";
 import {setGlobalState} from "../hooks/useGlobalState";
+import {Alert} from "react-native";
 
 const mutator = (path, data) => {
     let status = 500;
@@ -24,15 +25,17 @@ const mutator = (path, data) => {
                         setGlobalState("userToken", null);
                     }
                     return res.json();
-                } else
+                } else {
                     return res.json();
+                }
             })
             .then(jsonData=>{
                 // console.log(`${urls}${path}`, status, jsonData)
-                if (jsonData !== undefined)
+                if (jsonData)
                     return {status: status, payload: jsonData}
             })
             .catch(err=>{
+                // Alert.alert(`${err}`)
                 return {status: status};
             })
     )

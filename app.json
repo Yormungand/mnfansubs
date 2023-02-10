@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "mnfansubs",
+    "name": "MNFansubs",
     "slug": "mnfansubs",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -18,16 +18,23 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sodonsolution.mnfansubs"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive_icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.sodonsolution.mnfansubs"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "4cde6d1b-868c-4462-9d91-646994bd8f7b"
+      }
     }
   }
 }

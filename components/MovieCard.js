@@ -18,8 +18,8 @@ import colors from "../Utils/colors";
 import YoutubeIframe from "react-native-youtube-iframe";
 import {urls} from "../Utils/urls";
 
-const screenWidth = Dimensions.get("screen").width;
-const screenHeight = Dimensions.get("screen").height;
+const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
 export default function MovieCard({navigation, item, style,}) {
     const [open, setOpen] = useState(false);
     const [closeRequested, setCloseRequested] = useState(false);
@@ -45,7 +45,7 @@ export default function MovieCard({navigation, item, style,}) {
         if (state === "ended") {
             console.log("ENDED")
             setTrailerPlaying(false);
-            setModalVisible(!modalVisible)
+            setModalVisible(!modalVisible);
         }
     }, [])
 
@@ -54,7 +54,15 @@ export default function MovieCard({navigation, item, style,}) {
             youtube_parser(trailer)
         }
         // console.log(trailer)
-    }, [trailer])
+    }, [trailer]);
+
+    useEffect(() => {
+        if (item.trailer) {
+            setTrailer(item.trailer)
+        }
+    }, [item]);
+
+
 
     function handlePress(action) {
         setCloseRequested(true);
@@ -86,8 +94,8 @@ export default function MovieCard({navigation, item, style,}) {
 
             <BottomSheet open={open} onClose={handleClose} closeRequested={closeRequested}>
                 <>
-                    <View style={{flexDirection: "column", justifyContent: "flex-end", flex: 1, padding: 10, width: screenWidth}}>
-                        <View style={{flex: 1, flexDirection: "row",}}>
+                    <View style={{flexDirection: "column", justifyContent: "flex-end", flex: 1, padding: 10, width: windowWidth}}>
+                        <View onTouchEnd={e=>navigation.navigate("Movie", {movieId: `${item.id}`, name: `${item.name}`})} style={{flex: 1, flexDirection: "row",}}>
                             <Image
                                 source={{uri: `${urls}/resource/${encodeURIComponent(item.image.name)}.${item.image.ext}`}}
                                 style={{
@@ -168,7 +176,7 @@ export default function MovieCard({navigation, item, style,}) {
                         <View style={{
                             // flex: 1,
                             flexDirection: "row",
-                            marginBottom: 10,
+                            marginBottom: 15,
                             marginTop: Platform.OS === 'ios' ? 20 : 20
                         }}>
                             <View>
@@ -214,25 +222,27 @@ export default function MovieCard({navigation, item, style,}) {
                                     </View>
                                 </TouchableRipple>
                             </View>
-                            <View>
-                                <TouchableRipple style={[styles.button, {marginLeft: 10}]}
-                                                 mode="contained"
-                                                 onPress={() => {
-                                                     // setOpen(false)
-                                                     setModalVisible(true);
-                                                     setTrailer("https://youtu.be/Qx01pn9l-6g");
-                                                 }}
-                                                 rippleColor="rgba(255, 255, 255, .42)"
-                                >
-                                    <View style={{flexDirection: "row", alignItems: "center"}}>
-                                        <Ionicons name="videocam" color={colors.white} size={17}
-                                                  style={{marginRight: 3}}/>
-                                        <Text style={{color: colors.white}}>
-                                            Trailer
-                                        </Text>
-                                    </View>
-                                </TouchableRipple>
-                            </View>
+                            {
+                                trailer &&
+                                <View>
+                                    <TouchableRipple style={[styles.button, {marginLeft: 10}]}
+                                                     mode="contained"
+                                                     onPress={() => {
+                                                         // setOpen(false)
+                                                         setModalVisible(true);
+                                                     }}
+                                                     rippleColor="rgba(255, 255, 255, .42)"
+                                    >
+                                        <View style={{flexDirection: "row", alignItems: "center"}}>
+                                            <Ionicons name="videocam" color={colors.white} size={17}
+                                                      style={{marginRight: 3}}/>
+                                            <Text style={{color: colors.white}}>
+                                                Trailer
+                                            </Text>
+                                        </View>
+                                    </TouchableRipple>
+                                </View>
+                            }
                         </View>
                     </View>
                     <TouchableWithoutFeedback onPress={() => {
@@ -252,7 +262,7 @@ export default function MovieCard({navigation, item, style,}) {
                                         style={{
                                             borderRadius: 5,
                                             overflow: "hidden",
-                                            width: screenWidth - 20
+                                            width: windowWidth - 20
                                         }}>
                                         <YoutubeIframe
                                             height={220}
@@ -263,11 +273,6 @@ export default function MovieCard({navigation, item, style,}) {
                                             onChangeState={onStateChange}
                                         />
                                     </SafeAreaView>
-                                    {/*<Pressable
-                                    style={[styles.button, styles.buttonClose]}
-                                    onPress={() => setModalVisible(!modalVisible)}>
-                                    <Text style={styles.textStyle}>Хаах</Text>
-                                </Pressable>*/}
                                 </View>
                                 <TouchableOpacity
                                     onPress={() => setModalVisible(!modalVisible)}
@@ -287,7 +292,7 @@ export default function MovieCard({navigation, item, style,}) {
 
 const styles = StyleSheet.create({
     movieCardImage: {
-        width: screenWidth / 3.2,
+        width: windowWidth / 3.2,
         resizeMode: 'cover',
         zIndex: 1,
         aspectRatio: 2 / 3,
@@ -351,8 +356,8 @@ const styles = StyleSheet.create({
         position: "absolute",
         top: 0,
         left: 0,
-        width: screenWidth,
-        height: screenHeight,
+        width: windowWidth,
+        height: windowHeight,
         backgroundColor: "rgba(0,0,0,0.5)",
     },
 

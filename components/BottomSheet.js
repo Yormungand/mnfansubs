@@ -37,7 +37,7 @@ export default function BottomSheet({ open, children, onClose, height, closeRequ
                     borderTopRightRadius: 20
                 },
             }}
-            height={300}
+            height={320}
         >
             {children}
         </RBSheet>

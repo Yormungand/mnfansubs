@@ -1,7 +1,7 @@
-import {FlatList, ScrollView, View} from "react-native";
+import {Dimensions, FlatList, ScrollView, View} from "react-native";
 import EpisodeCard from "../components/EpisodeCard";
 import ListHeader from "../components/ListHeader";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {urls} from "../Utils/urls";
 import {setGlobalState, useGlobalState} from "../hooks/useGlobalState";
 import MovieCollectionsList from "../components/MovieCollectionsList";
@@ -9,6 +9,10 @@ import {FlashList} from "@shopify/flash-list";
 import fetcher from "../Utils/fetcher";
 import WatchedEpisodeCard from "../components/WatchedEpisodeCard";
 import MovieCard from "../components/MovieCard";
+
+
+const windowHeight = Dimensions.get("window").height;
+const windowWidth = Dimensions.get("window").width;
 
 export default function Home({navigation}) {
     const [latestEpisodes, setLatestEpisodes] = useState([]);
@@ -48,7 +52,7 @@ export default function Home({navigation}) {
 
     const getMoviesList = (movieStatus) => {
         fetcher(`/api/movie/list?movieStatus=${movieStatus}`)
-            .then((data)=>{
+            .then((data) => {
                 if (data.status === 200) {
                     if (movieStatus === "ONGOING") {
                         setOngoingMovies(data.payload.thisPageElements)
@@ -71,9 +75,20 @@ export default function Home({navigation}) {
         };
     }, []);
     //
+
+    const getEpisodeLayout = useCallback(
+        (data, index) => ({
+            length: 20,
+            offset: index * 20,
+            index
+        }),
+        [],
+    );
+
+
     const renderEpisodeItem = ({item}) => <EpisodeCard item={item} navigation={navigation}/>;
 
-    const renderWatchedEpisodeItem = ({item}) => <WatchedEpisodeCard item={item} navigation={navigation} />
+    const renderWatchedEpisodeItem = ({item}) => <WatchedEpisodeCard item={item} navigation={navigation}/>
     const movieCollectionList = ({item}) => <MovieCollectionsList item={item}/>;
 
     const renderMovieCard = ({item}) => <MovieCard item={item} navigation={navigation}/>
@@ -84,6 +99,7 @@ export default function Home({navigation}) {
                 data={[0]}
                 estimatedItemSize={3}
                 decelerationRate={0.555}
+                windowSize={21}
                 renderItem={() => (
                     <>
                         <View style={{marginTop: 20, marginBottom: 20}}>
@@ -96,6 +112,7 @@ export default function Home({navigation}) {
                                 horizontal
                                 maxToRenderPerBatch={2}
                                 updateCellsBatchingPeriod={200}
+                                getItemLayout={getEpisodeLayout}
                                 renderItem={renderWatchedEpisodeItem}/>
                         </View>
                         <View style={{marginBottom: 20}}>

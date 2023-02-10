@@ -2,7 +2,18 @@ import s from "../Utils/getRelativeSize";
 import colors from "../Utils/colors";
 import {TouchableRipple} from "react-native-paper";
 import {Ionicons} from "@expo/vector-icons";
-import {Alert, Dimensions, Platform, SafeAreaView, StatusBar, StyleSheet, Text, View} from "react-native";
+import {
+    Alert,
+    Dimensions, FlatList,
+    Image,
+    Platform,
+    SafeAreaView,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    Text, TouchableOpacity,
+    View
+} from "react-native";
 import {ResizeMode, Video} from "expo-av";
 import {useEffect, useRef, useState} from "react";
 import Back from "../svg/back";
@@ -11,10 +22,14 @@ import VideoPlayer from "expo-video-player";
 import PlayerControls from "../components/PlayerControls";
 import fetcher from "../Utils/fetcher";
 import {urls} from "../Utils/urls";
+import PlayerEpisodeItem from "../components/PlayerEpisodeItem";
 
 
 const SCREEN_WIDTH = Dimensions.get("screen").width
 const SCREEN_HEIGHT = Dimensions.get("screen").height
+
+const windowWidth = Dimensions.get("window").width
+const windowHeight = Dimensions.get("window").height
 export default function Player({navigation, route}) {
 
     // const episodeId = route.params.episodeId
@@ -36,6 +51,16 @@ export default function Player({navigation, route}) {
     const [duration, setDuration] = useState(0);
     const [currentTime, setCurrentTime] = useState(0);
 
+    const [movie, setMovie] = useState(null);
+    const [episode, setEpisode] = useState(null);
+    const [episodes, setEpisodes] = useState([]);
+    const [sections, setSections] = useState([]);
+    const [currSection, setCurrSection] = useState({});
+
+    const [selEpisode, setSelEpisode] = useState(null);
+    const [showEpisodes, setShowEpisodes] = useState(false);
+    const [showSections, setShowSections] = useState(false);
+
 
     const playbackInstance = useRef(null)
     const [playbackInstanceInfo, setPlaybackInstanceInfo] = useState({
@@ -45,75 +70,76 @@ export default function Player({navigation, route}) {
     });
 
     useEffect(() => {
-        let interval;
-        if (hidden) {
-            clearTimeout(interval)
-            setHidden(true);
-        } else {
-            interval = setTimeout(() => {
-                setHidden(true)
-            }, 3000)
-        }
-        return () => {
-
-        };
-    }, [hidden]);
-
-
-
-
-    useEffect(() => {
         if (playbackInstance.current) {
             playbackInstance.current.setStatusAsync({
                 shouldPlay: true
             })
         }
-        // getEpisodeVideo()
-    }, [video480, video720, video1080 ]);
+    }, [video480, video720, video1080]);
 
-    useEffect(()=>{
+    const fetchEpisodeData = () => {
         fetcher(`/api/movie/episode/${episodeId}`)
-            .then((data)=>{
-                if (data.status === 200){
+            .then((data) => {
+                if (data.status === 200) {
                     // console.log(`/api/movie/episode/${episodeId}`, data)
+                    setEpisode(data.payload)
                     setPosterImage(`${urls}/resource/${data.payload.image.name}.${data.payload.image.ext}`)
                 }
             })
         fetcher(`/api/movie/episode/${episodeId}/video`)
-            .then((data)=>{
-                if (data.status === 200){
+            .then((data) => {
+                if (data.status === 200) {
                     // console.log(`/api/movie/episode/${episodeId}/video`, data)
-                    setVideo480(`${urls}/resource/${data.payload.video480.name}.${data.payload.video480.ext}`)
-                    setVideo720(`${urls}/resource/${data.payload.video720.name}.${data.payload.video720.ext}`)
-                    setVideo1080(`${urls}/resource/${data.payload.video1080.name}.${data.payload.video1080.ext}`)
+                    if (data.payload.video480)
+                        setVideo480(`${urls}/resource/${data.payload.video480.name}.${data.payload.video480.ext}`)
+                    if (data.payload.video720)
+                        setVideo720(`${urls}/resource/${data.payload.video720.name}.${data.payload.video720.ext}`)
+                    if (data.payload.video1080)
+                        setVideo1080(`${urls}/resource/${data.payload.video1080.name}.${data.payload.video1080.ext}`)
                 }
             })
-    },[episodeId])
+    }
 
-    useEffect(() => {
-        if (playbackInstanceInfo.state === "Paused")
-            /*playbackInstance.current.setStatusAsync({
-                shouldPlay: true
-            })*/
-        return () => {
+    const fetchNewEpisodeData = () => {
+        fetcher(`/api/movie/${episode.movie.id}`)
+            .then((data) => {
+                if (data.status === 200)
+                    setMovie(data.payload)
+            })
+    }
 
-        };
-    }, [playbackInstanceInfo]);
+    const fetchSectionEpisodes = () => {
+        fetcher(`/api/movie/episode/list?sectionId=${currSection.id}`)
+            .then((data) => {
+                if (data.status === 200) {
+                    setEpisodes(data.payload)
+                    setShowSections(false)
+                }
+            })
+    }
 
-
+    const fetchMovieEpisodes = () => {
+        fetcher(`/api/movie/episode/list?movieId=${movie.id}`)
+            .then((data) => {
+                if (data.status === 200) {
+                    console.log(`${urls}/api/movie/episode/list?movieId=${movie.id}`)
+                    setEpisodes(data.payload)
+                }
+            })
+    }
 
     const getEpisodeVideo = () => {
         fetcher(`/api/movie/episode/${episodeId}/video`)
             .then((data) => {
                 // console.log(`/api/movie/episode/${episodeId}/video`, data)
                 if (data.status === 400) {
-                    if (data.payload.text === "Таны эрх хүрэлцэхгүй байна!"){
+                    if (data.payload.text === "Таны эрх хүрэлцэхгүй байна!") {
                         Alert.alert(
                             `Error ${data.status}`,
                             `${data.payload.text}`,
                             [{text: "За", onPress: () => navigation.goBack()}]);
                     }
-                    if (data.payload.text === "not_found_episode"){
+                    if (data.payload.text === "not_found_episode") {
                         Alert.alert(
                             `Error ${data.status}`,
                             `Not available to watch yet`,
@@ -126,10 +152,7 @@ export default function Player({navigation, route}) {
     }
 
     const togglePlay = async () => {
-        // console.log("PRESSED")
-
         const shouldPlay = playbackInstanceInfo.state !== 'Playback';
-
         if (playbackInstance.current !== null) {
             await playbackInstance.current.setStatusAsync({
                 shouldPlay,
@@ -145,7 +168,23 @@ export default function Player({navigation, route}) {
                 })
             }
         }
+        setHidden(false)
     }
+
+    const toggleHideControl = () => {
+        // let inactivityTimeout = null;
+        setHidden(false);
+    }
+
+    useEffect(() => {
+        let timer = setTimeout(()=>{
+            setHidden(true)
+        }, 4000)
+        return () => {
+            clearTimeout(timer)
+        };
+    }, [hidden]);
+
     const updatePlaybackCallback = (status) => {
         // console.log(status, 'status');
         if (status.isLoaded) {
@@ -163,6 +202,76 @@ export default function Player({navigation, route}) {
             }
         }
     }
+
+
+    useEffect(() => {
+        fetchEpisodeData();
+    }, [episodeId])
+
+    useEffect(() => {
+        if (episode) {
+            fetchNewEpisodeData();
+            if (episode.section) {
+                setCurrSection(episode.section)
+            }
+        }
+    }, [episode]);
+
+    useEffect(() => {
+        if (movie) {
+            if (movie.sections !== undefined && episode.sections !== null) {
+                setSections(movie.sections);
+            }
+        }
+        if (JSON.stringify(currSection) !== `{}`) {
+            fetchSectionEpisodes();
+            console.log("section episodes")
+        } else if (movie) {
+            fetchMovieEpisodes();
+            console.log("movie episodes")
+        }
+    }, [movie]);
+
+    useEffect(() => {
+
+    }, [currSection]);
+
+
+    useEffect(() => {
+        if (selEpisode) {
+            fetcher(`/api/movie/episode/${selEpisode}`)
+                .then((data) => {
+                    if (data.status === 200) {
+                        setEpisode(data.payload)
+                        setPosterImage(`${urls}/resource/${data.payload.image.name}.${data.payload.image.ext}`)
+                    }
+                })
+            fetcher(`/api/movie/episode/${selEpisode}/video`)
+                .then((data) => {
+                    if (data.status === 200) {
+                        // console.log(`/api/movie/episode/${episodeId}/video`, data)
+                        setVideo480(`${urls}/resource/${data.payload.video480.name}.${data.payload.video480.ext}`)
+                        setVideo720(`${urls}/resource/${data.payload.video720.name}.${data.payload.video720.ext}`)
+                        setVideo1080(`${urls}/resource/${data.payload.video1080.name}.${data.payload.video1080.ext}`)
+                    }
+                })
+            setShowEpisodes(false);
+        }
+    }, [selEpisode]);
+
+    useEffect(() => {
+        togglePlay().then()
+    }, [showEpisodes])
+
+    const renderEpisodeItem = ({item}) => (
+        <PlayerEpisodeItem
+            item={item}
+            currentEpisode={episode.id}
+            onPress={(value) => {
+                setSelEpisode(value);
+            }}
+        />
+    )
 
     return (
         <View
@@ -190,12 +299,7 @@ export default function Player({navigation, route}) {
                 }}
             />
 
-            <View onTouchEnd={e => {
-                if (hidden) {
-                    e.preventDefault();
-                }
-                setHidden(!hidden)
-            }} style={[styles.controlsContainer, hidden ? {opacity: 0} : {opacity: 1}]}>
+            <View onTouchEnd={(e)=>{toggleHideControl()}} style={[styles.controlsContainer, hidden ? {opacity: 0} : {opacity: 1}]}>
                 <View pointerEvents={hidden ? "none" : "auto"}>
                     <PlayerControls
                         state={playbackInstanceInfo.state}
@@ -203,51 +307,71 @@ export default function Player({navigation, route}) {
                         playbackInstanceInfo={playbackInstanceInfo}
                         setPlaybackInstanceInfo={setPlaybackInstanceInfo}
                         togglePlay={togglePlay}
+                        showEpisodes={() => setShowEpisodes(true)}
+                        episodesLength={episodes.length}
+                        // hiddenEpisodes={showEpisodes}
                     />
                 </View>
             </View>
-            {/*
-            <VideoPlayer
-                videoProps={{
-                    source:
+            <View style={[styles.playerSideBar, {right: showEpisodes ? 0 : "-100%"}]}>
+                {
+                    episodes.length > 0 &&
+                    <>
                         {
-                            uri: "https://www.mnfansubs.net/resource/mnfansubs/video/2020/12/01/ao9muj8l4hd04w2k/One_Piece_-_001_new.mp4"
-                        },
-                    resizeMode: ResizeMode.CONTAIN,
-                    shouldPlay: true,
-                    ref:videoRef,
-                }}
-                style={{height: SCREEN_HEIGHT - 80, width: SCREEN_WIDTH}}
-                fullscreen={{
-                    enterFullscreen: async ()=>{
-                        setInFullscreen(!inFullscreen);
-                        videoRef.current.setStatusAsync({
-                            shouldPlay: true
-                        })
-                    },
-                    exitFullscreen: ()=>{
-                        setInFullscreen(!inFullscreen);
-                        videoRef.current.setStatusAsync({
-                            shouldPlay: false
-                        })
-                    },
-                    inFullscreen,
-                }}
-                errorCallback={() => {
-                }}
-                playbackCallback={() => {
-                }}
-                defaultControlsVisible={false}
-                timeVisible={true}
-                header={
-                    <Text
-                        style={{color: '#FFF', width: SCREEN_WIDTH, textAlign: "center", fontSize: 18}}
-                    >
-                        Custom title
-                    </Text>
+                            JSON.stringify(currSection) !== `{}` &&
+                            <TouchableOpacity style={styles.sectionButton} onPress={() => setShowSections(true)}>
+                                <Text style={{color: "#fff"}}>{currSection.name}</Text>
+                            </TouchableOpacity>
+                        }
+                        <FlatList
+                            style={{
+                                zIndex: 2,
+                                overflow: "scroll"
+                            }}
+                            scrollEnabled
+                            data={episodes.reverse()}
+                            showsVerticalScrollIndicator
+                            ItemSeparatorComponent={() => (
+                                <View style={{paddingVertical: 3}}></View>
+                            )}
+                            renderItem={renderEpisodeItem}
+                        />
+                        <View style={{marginTop: 20, justifyContent: "center", alignItems: "center"}}>
+                            <TouchableOpacity style={styles.sectionHide} onPress={() => setShowEpisodes(false)}>
+                                <Ionicons name={"close"} size={30} color={"#000"}/>
+                            </TouchableOpacity>
+                        </View>
+                    </>
                 }
-            />
-            */}
+                {
+                    sections.length > 0 &&
+                    <View style={[styles.sectionsWrap, {right: showSections ? 0 : "-200%"}]}>
+                        <FlatList
+                            data={sections}
+                            renderItem={(item) => {
+                                if (item.item.status !== "sodon.admin.common.status.DISABLED") {
+                                    return (
+                                        <TouchableOpacity
+                                            style={{
+                                                paddingVertical: 10,
+                                                paddingHorizontal: 5,
+                                            }}
+                                            onPress={()=>setCurrSection(item.item)}
+                                        >
+                                            <Text style={{color: "#fff"}}>{item.item.name}</Text>
+                                        </TouchableOpacity>
+                                    )
+                                }
+                            }}
+                        />
+                        <View style={{alignSelf: "center"}}>
+                            <TouchableOpacity style={styles.sectionHide} onPress={() => setShowSections(false)}>
+                                <Ionicons name={"close"} size={30} color={"#000"}/>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                }
+            </View>
         </View>
     )
 }
@@ -257,5 +381,39 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 0,
         height: "100%"
+    },
+    playerSideBar: {
+        position: "absolute",
+        top: 0,
+        right: "-100%",
+        bottom: 0,
+        padding: 15,
+        width: 300,
+        height: "100%",
+        backgroundColor: "rgba(0,0,0,.6)",
+    },
+    sectionButton: {
+        borderWidth: 1,
+        borderColor: "rgba(100,100,100,.5)",
+        marginBottom: 20,
+        padding: 10,
+        backgroundColor: "rgba(100,100,100,.5)"
+    },
+    sectionHide: {
+        borderRadius: 25,
+        backgroundColor: "#fff",
+        width: 50,
+        height: 50,
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    sectionsWrap: {
+        position: "absolute",
+        top: 0,
+        right: "-200%",
+        zIndex: 2,
+        width: 300,
+        height: windowHeight,
+        backgroundColor: "rgba(0,0,0,.9)",
     }
-})
+});

@@ -22,7 +22,7 @@ import {urls} from "../Utils/urls";
 
 const screenWidth = Dimensions.get("screen").width;
 const screenHeight = Dimensions.get("screen").height;
-export default function MovieListCard({ movie }) {
+export default function MovieListCard({movie}) {
 
     const [open, setOpen] = useState(false);
     const [closeRequested, setCloseRequested] = useState(false);
@@ -61,6 +61,12 @@ export default function MovieListCard({ movie }) {
         // console.log(trailer)
     }, [trailer])
 
+    useEffect(() => {
+        if (movie.trailer)
+            setTrailer(movie.trailer);
+    }, [movie]);
+
+
     function handlePress(action) {
         setCloseRequested(true);
     }
@@ -79,23 +85,16 @@ export default function MovieListCard({ movie }) {
                         {movie.name}
                     </Text>
                     <View style={{flexDirection: "row", marginBottom: 3}}>
-                        <Text style={{marginRight: 15, color: colors.grey["600"], fontSize:14}}>{movie.year}</Text>
+                        <Text style={{marginRight: 15, color: colors.grey["600"], fontSize: 14}}>{movie.year}</Text>
                         {
                             movie.totalNumber &&
-                            <Text style={{color: colors.grey["600"], fontSize:14}}>{movie.totalNumber} анги</Text>
+                            <Text style={{color: colors.grey["600"], fontSize: 14}}>{movie.totalNumber} анги</Text>
                         }
                     </View>
-                    {/*<View style={{flexDirection: "row", flexWrap: "wrap", marginTop: 5}}>
-                        <View
-                            style={style.collectionTag}
-                        >
-                            <Text style={style.collectionTagName}>Найруулагч Хосода Маморүгийн цуглуулга</Text>
-                        </View>
-                    </View>*/}
                     <View style={{flexDirection: "row", flexWrap: "wrap", marginTop: 5}}>
                         {
                             movie.categories.length > 0 &&
-                            movie.categories.map((cat)=>(
+                            movie.categories.map((cat) => (
                                 <View key={`cat-${cat.id}`} style={style.categoryTag}>
                                     <Text style={style.categoryTagName}>{cat.name}</Text>
                                 </View>
@@ -107,8 +106,19 @@ export default function MovieListCard({ movie }) {
 
             <BottomSheet open={open} onClose={handleClose} closeRequested={closeRequested}>
                 <>
-                    <View style={{flexDirection: "column", justifyContent: "flex-end", flex: 1, padding: 10, width: screenWidth}}>
-                        <View style={{flex: 1, flexDirection: "row",}}>
+                    <View style={{
+                        flexDirection: "column",
+                        justifyContent: "flex-end",
+                        flex: 1,
+                        padding: 10,
+                        width: screenWidth
+                    }}>
+                        <View
+                            onTouchEnd={e => navigation.navigate("Movie", {
+                                movieId: `${movie.id}`,
+                                name: `${movie.name}`
+                            })}
+                            style={{flex: 1, flexDirection: "row",}}>
                             <Image
                                 source={{uri: `${urls}/resource/${movie.image.name}.${movie.image.ext}`}}
                                 style={{
@@ -227,7 +237,10 @@ export default function MovieListCard({ movie }) {
                                                  mode="contained"
                                                  onPress={() => {
                                                      setOpen(false)
-                                                     navigation.navigate("Movie", {movieId: `${movie.id}`, name: `${movie.name}`})
+                                                     navigation.navigate("Movie", {
+                                                         movieId: `${movie.id}`,
+                                                         name: `${movie.name}`
+                                                     })
                                                  }}
                                                  rippleColor="rgba(255, 255, 255, .42)"
                                 >
@@ -244,25 +257,27 @@ export default function MovieListCard({ movie }) {
                                     </View>
                                 </TouchableRipple>
                             </View>
-                            <View>
-                                <TouchableRipple style={[Styles.button, {marginLeft: 10}]}
-                                                 mode="contained"
-                                                 onPress={() => {
-                                                     // setOpen(false)
-                                                     setModalVisible(true);
-                                                     setTrailer("https://youtu.be/Qx01pn9l-6g");
-                                                 }}
-                                                 rippleColor="rgba(255, 255, 255, .42)"
-                                >
-                                    <View style={{flexDirection: "row", alignItems: "center"}}>
-                                        <Ionicons name="videocam" color={colors.white} size={17}
-                                                  style={{marginRight: 3}}/>
-                                        <Text style={{color: colors.white}}>
-                                            Trailer
-                                        </Text>
-                                    </View>
-                                </TouchableRipple>
-                            </View>
+                            {
+                                trailer &&
+                                <View>
+                                    <TouchableRipple style={[Styles.button, {marginLeft: 10}]}
+                                                     mode="contained"
+                                                     onPress={() => {
+                                                         // setOpen(false)
+                                                         setModalVisible(true);
+                                                     }}
+                                                     rippleColor="rgba(255, 255, 255, .42)"
+                                    >
+                                        <View style={{flexDirection: "row", alignItems: "center"}}>
+                                            <Ionicons name="videocam" color={colors.white} size={17}
+                                                      style={{marginRight: 3}}/>
+                                            <Text style={{color: colors.white}}>
+                                                Trailer
+                                            </Text>
+                                        </View>
+                                    </TouchableRipple>
+                                </View>
+                            }
                         </View>
                     </View>
                     <TouchableWithoutFeedback onPress={() => {
