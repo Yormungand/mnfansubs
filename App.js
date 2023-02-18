@@ -24,19 +24,21 @@ import ClientProfile from "./screens/client/ClientProfile";
 import ClientProfileEdit from "./screens/client/ClientProfileEdit";
 import ClientProfilePassword from "./screens/client/ClientProfilePassword";
 
-const theme = {
-    roundness: 2,
-    dark: true,
-    colors: {
-        primary: '#fff',
-        background: "#1d1d1d",
-        text: "#fff",
-        card: "#999",
-        roundness: 10
-    },
-};
 //
 export default function App() {
+
+    const theme = {
+        ...DefaultTheme.dark,
+        roundness: 2,
+        dark: true,
+        colors: {
+            primary: '#fff',
+            background: "#1d1d1d",
+            text: "#fff",
+            card: "#999",
+            roundness: 10
+        },
+    };
     // const visibility = NavigationBar.useVisibility();
     return (
         <RecoilRoot>

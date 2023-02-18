@@ -573,8 +573,9 @@ function PickerField({label, options, value, onChange}) {
                     selectedValue={value}
                     dropdownIconColor={"#fff"}
                     style={{borderRadius: 10, flex: 1, backgroundColor: "#161616"}}
-                    itemStyle={{color: "#fff", fontSize: 36, backgroundColor: "#161616"}}
+                    itemStyle={{color: "#fff", fontSize: 18, backgroundColor: "#161616"}}
                     onValueChange={(itemValue) => onChange(itemValue)}
+                    mode={"dropdown"}
                 >
                     {options.map((option) => {
                         if (option.status !== "sodon.admin.common.status.DISABLED" &&

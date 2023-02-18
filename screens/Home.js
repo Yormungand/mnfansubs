@@ -113,7 +113,11 @@ export default function Home({navigation}) {
                                 maxToRenderPerBatch={2}
                                 updateCellsBatchingPeriod={200}
                                 getItemLayout={getEpisodeLayout}
-                                renderItem={renderWatchedEpisodeItem}/>
+                                renderItem={renderWatchedEpisodeItem}
+                                ListEmptyComponent={()=>(
+                                    renderWatchedEpisodeItem({})
+                                )}
+                            />
                         </View>
                         <View style={{marginBottom: 20}}>
                             <ListHeader headerName="Шинээр нэмэгдсэн ангиуд"/>

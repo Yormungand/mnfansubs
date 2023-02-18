@@ -1,6 +1,7 @@
 import {Dimensions, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {useNavigation} from "@react-navigation/native";
 import {urls} from "../Utils/urls";
+import logo from "../assets/adaptive_icon.png";
 
 const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
@@ -8,31 +9,50 @@ export default function EpisodeCard({item}) {
     const navigation = useNavigation()
     // console.log(`${item.image.path.replace(/ /g, '%20')}`)
     // console.log(`${item.image.path}`)
-    return (
-        <>
-            <View
-                key={`episode-${item.id}`}
-                style={style.episodeCard}
-                activeOpacity={0.4}
-            >
-                <TouchableOpacity activeOpacity={.7} onPress={() => navigation.navigate("Player", {episodeId: item.id})}>
-                    {
-                        item.image &&
+    if (item) {
+        return (
+            <>
+                <View
+                    key={`episode-${item.id}`}
+                    style={style.episodeCard}
+                    activeOpacity={0.4}
+                >
+                    <TouchableOpacity activeOpacity={.7} onPress={() => navigation.navigate("Player", {episodeId: item.id})}>
+                        {
+                            item.image &&
+                            <Image
+                                source={{uri: `${urls}/resource/${encodeURIComponent(item.image.name)}_s.${item.image.ext}`}}
+                                style={style.episodeCardImage}
+                            />
+                        }
+                        <View style={style.episodeCardNameWrapper} pointerEvents="none">
+                            <Text
+                                style={style.episodeCardName}>
+                                {item.movie.name} {item.episodeNumber ? `${item.episodeNumber}-р анги`:""}
+                            </Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            </>
+        )
+    } else {
+        return (
+            <>
+                <View
+                    key={`episode`}
+                    style={style.episodeCard}
+                >
+                    <TouchableOpacity activeOpacity={.7}
+                                      onPress={() => {}}>
                         <Image
-                            source={{uri: `${urls}/resource/${encodeURIComponent(item.image.name)}_s.${item.image.ext}`}}
+                            source={{uri:`${urls}/static/webs/mnfansubs/assets/adaptive_icon.png`}}
                             style={style.episodeCardImage}
                         />
-                    }
-                    <View style={style.episodeCardNameWrapper} pointerEvents="none">
-                        <Text
-                            style={style.episodeCardName}>
-                            {item.movie.name} {item.episodeNumber ? `${item.episodeNumber}-р анги`:""}
-                        </Text>
-                    </View>
-                </TouchableOpacity>
-            </View>
-        </>
-    )
+                    </TouchableOpacity>
+                </View>
+            </>
+        )
+    }
 }
 
 const style = StyleSheet.create({
@@ -44,6 +64,7 @@ const style = StyleSheet.create({
         flex: 1,
         backgroundColor: "#000",
         overflow: "hidden",
+        minWidth: windowWidth / 2.5,
     },
     episodeCardNameWrapper: {
         position: 'absolute',
@@ -64,6 +85,7 @@ const style = StyleSheet.create({
         width: windowWidth / 2.3,
         resizeMode: 'cover',
         aspectRatio: 16/9,
-        backgroundColor: "#161616"
+        backgroundColor: "#161616",
+        minWidth: "100%",
     }
 })
